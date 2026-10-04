@@ -4,26 +4,32 @@ Buka satu per satu. Tiap hint cuma kasih pertanyaan berikutnya, bukan jawabannya
 
 ---
 
-## Hint 1 — soal jumlah query, bukan soal kecepatan
+## Hint 1 — dari mana 41 query itu
 
-91 query. Dari mana saja angkanya?
+Empat puluh satu query. Kelompokkan dulu angkanya sebelum mengubah apa pun.
 
-Tiga kelompok. Satu untuk daftar post. Dua kelompok lagi masing-masing muncul per post yang
-kamu proses. Temukan dua baris di `api/app/repositories.py` yang menghasilkan query di dalam
-perulangan.
+Ada tiga kelompok. Satu untuk daftar post. Dua kelompok lagi, masing-masing muncul sekali
+per post yang kamu proses — dan itu berarti keduanya ada di dalam perulangan.
 
-Setelah menemukan keduanya, jawab dulu: **dari dua kelompok itu, mana yang sebenarnya bikin
-lambat?** Jangan asal benerin dua-duanya sebelum bisa menjawab ini. Salah satu kelompok jauh
-lebih mahal daripada yang lain, dan kalau kamu salah menebak, kamu bakal benerin yang murah
-lalu bingung kenapa masih lambat.
+Setelah ketemu, jangan benerin dua-duanya sekaligus. Jawab dulu: **dari dua kelompok itu,
+mana yang sebenarnya bikin lambat?** Salah satu kelompok jauh lebih mahal dari yang lain.
+Kalau kamu salah menebak, kamu bakal benerin yang murah, melihat hasilnya hampir nggak
+berubah, dan bingung.
+
+Petunjuk untuk memutuskan: bandingkan kolom apa yang dipakai untuk mencari di masing-masing
+kelompok. Satu kelompok mencari berdasarkan kunci utama — itu pencarian paling murah yang
+bisa dilakukan database. Kelompok yang lain mencari berdasarkan kolom biasa.
 
 ---
 
-## Hint 2 — kenapa satu query bisa mahal
+## Hint 2 — query-nya sudah 2, kok masih merah
 
-Anggap query kamu sudah turun ke 2. Query-nya sedikit. Kok masih ratusan milidetik?
+Selamat, query kamu tinggal 2. Sekarang lihat baris kedua `make check`: masih sekitar
+60 ms, dan targetnya 30 ms.
 
-Coba jalankan sendiri di database, di luar aplikasi:
+Query-nya sedikit. Berarti masalahnya bukan jumlahnya.
+
+Jawab ini di luar aplikasi:
 
 ```bash
 make psql
@@ -33,36 +39,51 @@ make psql
 EXPLAIN ANALYZE SELECT count(*) FROM comments WHERE post_id = 7;
 ```
 
-Perhatikan kata `Seq Scan` dan berapa baris yang dibaca untuk menghasilkan satu angka.
-Sekarang pertanyaannya: kenapa Postgres membaca jauh lebih banyak baris daripada yang kamu
-butuhkan?
+Perhatikan dua hal: jenis scan-nya apa, dan berapa baris yang dibaca untuk menghasilkan
+satu angka.
+
+750.000 baris dibaca untuk menjawab satu pertanyaan sederhana "ada berapa komentar di post
+ini". Pertanyaan berikutnya: kenapa Postgres membaca sejauh itu, padahal kamu hanya minta
+satu angka?
 
 ---
 
-## Hint 3 — dua hal yang harus berubah, dan satu jebakan
+## Hint 3 — dua perbaikan, di dua tempat berbeda
 
-Ada **dua** perbaikan, di dua tempat yang berbeda:
+Ada **dua** hal yang harus berubah, dan keduanya bukan di file yang sama.
 
-1. **Di aplikasi** — query per post harus jadi query yang dikelompokkan, bukan diulang.
-   Untuk menghitung, kamu nggak butuh barisnya; kamu butuh agregatnya.
-2. **Di database** — `comments.post_id` nggak punya index. Ini bagian yang biasanya
-   diabaikan karena "kodenya sudah benar".
+**1. Di aplikasi.** Query yang terakhir tersisa, yang menghitung komentar, dijalankan
+sekali per post. Padahal kamu nggak butuh barisnya sama sekali — kamu cuma butuh angkanya.
+Kumpulkan semua id post dalam satu halaman, lalu ambil seluruh angkanya dalam **satu** query
+yang dikelompokkan (`GROUP BY`).
 
-Kalau kamu baru mengerjakan nomor 1, `make check` akan menunjukkan satu baris masih merah.
-Bagus — itu artinya kamu melihat masalah yang paling sering lolos ke produksi: kode yang
-sudah diperbaiki di atas skema yang belum.
+Sampai sini: 2 query, tapi `make check` masih merah di baris latency.
 
-**Jebakan:** cara termudah "menghilangkan" query per post adalah memuat relasi komentarnya
-sekaligus (`selectinload(Post.comments)`). Query-nya memang langsung jadi 2. Tapi sekarang
-kamu memindahkan 25.000 baris dari database ke memori aplikasi hanya untuk menghitungnya.
-Lihat apakah `make check` hijau. Kalau iya — periksa lagi, karena di dataset yang lebih
-besar ini akan kembali meledak.
+**2. Di database.** `comments.post_id` nggak punya index. Ini bagian yang paling sering
+diabaikan, karena "kodenya sudah benar" — dan memang benar, yang salah datanya.
 
-Index untuk produksi dibuat tanpa mengunci tabel:
+Di produksi, tabel `comments` nggak akan kosong, jadi index harus dibuat tanpa mengunci
+tabel:
 
 ```sql
 CREATE INDEX CONCURRENTLY idx_comments_post_id ON comments (post_id);
 ```
 
-Kenapa `CONCURRENTLY` penting di produksi, dan apa harganya? Itu pertanyaan untuk lab
-berikutnya.
+Kenapa `CONCURRENTLY` penting, dan apa harganya — itu pertanyaan untuk lab berikutnya.
+
+---
+
+## Jebakan yang harus kamu hindari
+
+Cara paling cepat membuat query jadi 2 adalah memangggil relasi komentarnya sekaligus, lalu
+memakai `len()` di atasnya. Ini terasa seperti jawaban yang benar, karena *eager loading*
+memang solusi yang ditulis di hampir semua artikel tentang N+1.
+
+Query-nya langsung jadi 2. Tapi perhatikan `make check`: **masih ~1.000 ms.**
+
+Yang terjadi: 20 post × ~1.875 komentar = **37.500 baris** dipindahkan dari database ke
+memori aplikasi, cuma supaya Python bisa menghitungnya dengan `len()`. Database berhenti
+bekerja keras; sekarang aplikasi yang bekerja keras. Tambahkan index pun nggak menolongnya —
+data itu tetap harus menyeberang.
+
+Menghitung nggak butuh datanya. Butuh angkanya.

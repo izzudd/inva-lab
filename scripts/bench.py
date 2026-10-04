@@ -11,9 +11,9 @@ import time
 import urllib.request
 
 BASE = "http://localhost:58000"
-ENDPOINT = f"{BASE}/api/posts?limit=50"
-WARMUP = 5
-RUNS = 25
+ENDPOINT = f"{BASE}/api/posts?limit=20"
+WARMUP = 2
+RUNS = 10
 
 
 def hit(url: str) -> tuple[float, int]:

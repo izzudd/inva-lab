@@ -13,7 +13,7 @@ def health() -> dict:
 
 
 @app.get("/api/posts")
-def list_posts(limit: int = Query(50, ge=1, le=200)):
+def list_posts(limit: int = Query(20, ge=1, le=200)):
     query_counter.reset()
 
     with SessionLocal() as session:

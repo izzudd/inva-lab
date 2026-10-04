@@ -1,5 +1,9 @@
 -- Data "produksi": jumlahnya yang bikin masalahnya kelihatan.
--- 400 post, rata-rata ~500 komentar per post = 200.000 baris komentar.
+-- 400 post, rata-rata ~1.900 komentar per post = 750.000 baris komentar.
+--
+-- Jumlah komentar ini titik soalnya, bukan variabel yang bisa diakali.
+-- Kalau kamu mau membuktikan bahwa biaya di endpoint ini tumbuh mengikuti
+-- jumlah baris, kalikan angka 750000 di bawah, lalu `make reset`.
 
 INSERT INTO authors (name)
 SELECT 'Penulis ' || g FROM generate_series(1, 40) g;
@@ -18,7 +22,7 @@ SELECT
     'Komentator ' || (g % 900),
     'Komentar nomor ' || g,
     now() - (g || ' seconds')::interval
-FROM generate_series(1, 200000) g;
+FROM generate_series(1, 750000) g;
 
 ANALYZE authors;
 ANALYZE posts;

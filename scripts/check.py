@@ -10,12 +10,12 @@ import time
 import urllib.request
 
 BASE = "http://localhost:58000"
-ENDPOINT = f"{BASE}/api/posts?limit=50"
-WARMUP = 5
-RUNS = 25
+ENDPOINT = f"{BASE}/api/posts?limit=20"
+WARMUP = 2
+RUNS = 10
 
 MAX_QUERIES_PER_REQUEST = 3
-MAX_P95_MS = 60.0
+MAX_P95_MS = 30.0
 
 
 def hit(url: str) -> tuple[float, int]:
