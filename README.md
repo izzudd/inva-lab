@@ -15,7 +15,7 @@ Di sini:
 | | sekarang |
 |---|---|
 | query ke database per request | **41** |
-| latency p95 | **~1.150 ms** |
+| latency p95 | **~1.100 ms** |
 
 Server tidak error. Tidak lambat di kasus tertentu saja. Dia konsisten lambat di setiap
 request — dan itu yang bikin masalahnya nggak kelihatan di staging, karena staging-nya
