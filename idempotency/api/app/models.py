@@ -1,7 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
@@ -27,10 +28,30 @@ class LedgerEntry(Base):
 
 
 class DeliveryAttempt(Base):
-    """Pengiriman yang sudah kita proses."""
+    """Pengiriman yang pernah datang.
+
+    Tidak lagi dipakai untuk memutuskan idempotensi (itu tugas processed_events),
+    tapi tetap dicatat supaya bisa dijawab: "pengiriman ini datang berapa kali?"
+    """
 
     __tablename__ = "delivery_attempts"
 
     delivery_id: Mapped[str] = mapped_column(String, primary_key=True)
     event_id: Mapped[str] = mapped_column(String)
+    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class ProcessedEvent(Base):
+    """Klaim satu event, sekaligus tempat menyimpan jawaban pengiriman pertama.
+
+    Primary key-nya event_id. Itu yang bikin "periksa dulu, baru tulis" tidak
+    perlu lagi: database yang memutuskan, di satu statement INSERT.
+    """
+
+    __tablename__ = "processed_events"
+
+    event_id: Mapped[str] = mapped_column(String, primary_key=True)
+    request_fingerprint: Mapped[str] = mapped_column(String)
+    response_status: Mapped[int] = mapped_column(Integer, default=200)
+    response_body: Mapped[dict | None] = mapped_column(JSONB)
     processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
