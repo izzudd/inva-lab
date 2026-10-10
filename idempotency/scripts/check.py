@@ -88,7 +88,7 @@ def check_case_a() -> list[tuple[str, bool, str]]:
     ]
 
 
-def check_case_b() -> tuple[list[tuple[str, bool, str]], list[tuple[int, str]]]:
+def check_case_b() -> tuple[list[tuple[str, bool, str]], list[tuple[int, str, str]]]:
     """Satu event dikirim ulang berkali-kali, berurutan, tiap kiriman id-nya berbeda."""
     event = new_event()
     before = balance()
@@ -101,14 +101,26 @@ def check_case_b() -> tuple[list[tuple[str, bool, str]], list[tuple[int, str]]]:
     return [
         ("B1 empat pengiriman, tetap satu baris ledger", rows == 1, f"{rows} baris"),
         ("B2 saldo naik tepat sekali", delta == AMOUNT, f"naik {delta:.0f}"),
-    ], [(status, raw) for status, _, raw in results]
+    ], list(results)
 
 
-def check_case_c(bodies: list[tuple[int, str]]) -> list[tuple[str, bool, str]]:
-    """Pengiriman ulang harus dijawab persis seperti jawaban pertama."""
-    statuses = [status for status, _ in bodies]
-    first = bodies[0][1]
-    same = all(body == first for _, body in bodies)
+def as_value(raw: str):
+    """Body sebagai nilai JSON, kalau memang JSON."""
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return raw
+
+
+def check_case_c(bodies: list[tuple[int, dict, str]]) -> list[tuple[str, bool, str]]:
+    """Pengiriman ulang harus dijawab persis seperti jawaban pertama.
+
+    Dibandingkan sebagai nilai JSON, bukan sebagai teks: urutan key tidak
+    penting, isinya penting.
+    """
+    statuses = [status for status, _, _ in bodies]
+    first = as_value(bodies[0][2])
+    same = all(as_value(raw) == first for _, _, raw in bodies)
 
     return [
         (
@@ -117,9 +129,9 @@ def check_case_c(bodies: list[tuple[int, str]]) -> list[tuple[str, bool, str]]:
             f"status: {statuses}",
         ),
         (
-            "C2 body pengiriman ulang identik dengan jawaban pertama",
+            "C2 body pengiriman ulang sama dengan jawaban pertama",
             same,
-            "sama" if same else f"beda: {bodies[0][1][:80]} vs {bodies[1][1][:80]}",
+            "sama" if same else f"beda: {bodies[0][2][:90]} ... {bodies[1][2][:90]}",
         ),
     ]
 
