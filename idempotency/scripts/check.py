@@ -147,15 +147,22 @@ def check_case_d() -> list[tuple[str, bool, str]]:
         with ThreadPoolExecutor(max_workers=CONCURRENT) as pool:
             outcomes = list(pool.map(lambda _: deliver(event, AMOUNT), range(CONCURRENT)))
 
-        applied = sum(1 for status, _, _ in outcomes if is_2xx(status) and status != 0)
+        applied = sum(1 for status, _, _ in outcomes if is_2xx(status))
         rows = len(entries_for(event))
         delta = round(balance() - before, 2)
 
         results.append(
             (
-                f"D{round_no} {CONCURRENT} pengiriman bersamaan, tetap satu baris ledger",
+                f"D{round_no}a {CONCURRENT} pengiriman bersamaan, tetap satu baris ledger",
                 rows == 1,
-                f"{rows} baris ({applied} dijawab 2xx, saldo naik {delta:.0f})",
+                f"{rows} baris (saldo naik {delta:.0f})",
+            )
+        )
+        results.append(
+            (
+                f"D{round_no}b semua pengiriman bersamaan dijawab 2xx",
+                applied == CONCURRENT,
+                f"{applied} dari {CONCURRENT}",
             )
         )
 
@@ -217,8 +224,9 @@ def check_case_g() -> list[tuple[str, bool, str]]:
     before = balance()
 
     with ThreadPoolExecutor(max_workers=CONCURRENT) as pool:
-        list(pool.map(lambda event: deliver(event, AMOUNT), events))
+        outcomes = list(pool.map(lambda event: deliver(event, AMOUNT), events))
 
+    answered = sum(1 for status, _, _ in outcomes if is_2xx(status))
     rows = sum(len(entries_for(event)) for event in events)
     delta = round(balance() - before, 2)
 
@@ -232,6 +240,11 @@ def check_case_g() -> list[tuple[str, bool, str]]:
             f"G2 saldo naik {CONCURRENT} kali nominal",
             delta == CONCURRENT * AMOUNT,
             f"naik {delta:.0f} dari {CONCURRENT * AMOUNT} yang seharusnya",
+        ),
+        (
+            f"G3 semua {CONCURRENT} pengiriman dijawab 2xx",
+            answered == CONCURRENT,
+            f"{answered} dari {CONCURRENT}",
         ),
     ]
 

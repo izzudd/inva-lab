@@ -40,7 +40,8 @@ Bikin `make check` hijau. Empat syarat:
 2. **Pengiriman ulang dijawab seperti jawaban pertama.** Bukan error, bukan pesan
    "sudah diproses" — body yang sama persis, dengan `entry_id` yang sama. Gateway yang
    mengirim ulang tidak tahu apa yang terjadi pada percobaan pertamanya; kalau kita
-   menjawabnya dengan sesuatu yang lain, dia tetap tidak tahu.
+   menjawabnya dengan sesuatu yang lain, dia tetap tidak tahu. Ini berlaku juga saat
+   pengiriman ulangnya datang bersamaan.
 3. **`event_id` yang dipakai ulang dengan isi berbeda tidak ikut diproses.** Nominal yang
    berbeda untuk event yang sama tidak boleh masuk ke ledger.
 4. **Saldo tetap benar saat banyak event datang bersamaan.** Dua puluh event *berbeda* yang
