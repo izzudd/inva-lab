@@ -4,21 +4,24 @@ Buka satu per satu. Tiap hint cuma kasih pertanyaan berikutnya, bukan jawabannya
 
 ---
 
-## Hint 1 — kenapa 4 baris, padahal ini satu event
+## Hint 1 — kenapa 4 baris, padahal ini satu pembayaran
 
-Jalankan `make replay`, lalu baca dua baris teratas di outputnya: `X-Event-Id` dan
-`X-Delivery-Id`.
+Jalankan `make replay`. Empat pengiriman, satu event, satu baris yang seharusnya.
 
-Empat pengiriman. Satu id tetap sama di keempatnya, satu id berubah tiap kali. Tanya
-diri sendiri: **kenapa gateway mengirim yang berubah-ubah, dan apa yang sebenarnya sedang
-diberitahukan ke kamu?**
+Pertanyaan pertama bukan "di mana bugnya" — di kode itu memang nggak ada bug. Pertanyaan
+pertama: **kenapa gateway mengirim ulang?**
 
-Sekarang balik ke `api/app/handlers.py` dan lihat penjagaan yang dipakai. Dari dua id itu,
-yang mana yang dipakai untuk memutuskan "sudah pernah diproses"?
+Jawabannya ada di dokumen mereka, dan bunyinya kira-kira: "kalau kami tidak menerima balasan
+2xx, kami mengirim ulang". Sekarang pertanyaan kedua, dan ini yang penting: percobaan pertama
+kamu balas dengan 200. Jadi **kenapa mereka nggak tahu?**
 
-Dan satu pertanyaan yang lebih penting dari keduanya: waktu kamu mengetes endpoint ini sendiri
-dengan mengirim request yang sama dua kali, kenapa hasilnya benar? Kalau kamu tidak bisa
-menjawab ini, kamu belum tahu di mana bugnya — kamu cuma tahu ada yang salah.
+Coba jawab dulu sebelum lanjut. Kalau kamu nggak bisa, kamu belum tahu di mana masalahnya —
+kamu cuma tahu ada yang salah. (Baris yang perlu kamu lihat cuma dua: `session.commit()`, dan
+`return` setelahnya.)
+
+Pertanyaan ketiga: kalau pengiriman ulang itu normal, dan bukan kesalahan siapa pun, **siapa
+yang seharusnya memutuskan bahwa event ini sudah pernah diterima?** Dan di mana keputusan itu
+disimpan sampai besok?
 
 ---
 

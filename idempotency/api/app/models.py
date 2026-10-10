@@ -24,13 +24,3 @@ class LedgerEntry(Base):
     delivery_id: Mapped[str] = mapped_column(String)
     amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-
-class DeliveryAttempt(Base):
-    """Pengiriman yang sudah kita proses."""
-
-    __tablename__ = "delivery_attempts"
-
-    delivery_id: Mapped[str] = mapped_column(String, primary_key=True)
-    event_id: Mapped[str] = mapped_column(String)
-    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

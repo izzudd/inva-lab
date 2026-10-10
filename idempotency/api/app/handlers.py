@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from .models import Account, DeliveryAttempt, LedgerEntry
+from .models import Account, LedgerEntry
 
 
 def apply_payment(
@@ -22,33 +22,15 @@ def apply_payment(
 ) -> tuple[int, dict]:
     """Catat satu pembayaran yang berhasil, lalu perbarui saldo akun.
 
-    Gateway ini mengirim ulang event kalau jawaban dari kita tidak sampai ke
-    mereka (timeout, koneksi putus, atau kita balas dengan error). Supaya
-    pengiriman ulang tidak diproses dua kali, kita catat id tiap pengiriman dan
-    memeriksanya lebih dulu di sini.
+    Gateway mengirim eventnya lewat HTTP dan endpoint ini membalas 200 setelah
+    transaksinya commit, jadi selama jalanan requestnya tidak bermasalah, satu
+    event dari gateway sampai ke sini tepat satu kali.
     """
-
-    # Idempotensi.
-    # Pengiriman dengan delivery_id ini sudah pernah kita proses, jadi tidak
-    # ada yang perlu dikerjakan lagi. Ini yang bikin endpoint ini aman dipanggil
-    # dua kali dengan request yang sama.
-    already = session.execute(
-        select(DeliveryAttempt.delivery_id).where(
-            DeliveryAttempt.delivery_id == delivery_id
-        )
-    ).scalar_one_or_none()
-
-    if already is not None:
-        return 200, {
-            "status": "ignored",
-            "reason": "pengiriman ini sudah pernah diproses",
-        }
+    nominal = Decimal(str(amount)).quantize(Decimal("0.01"))
 
     account = session.get(Account, account_id)
     if account is None:
         return 404, {"status": "error", "reason": f"akun {account_id} tidak ada"}
-
-    nominal = Decimal(str(amount))
 
     entry = LedgerEntry(
         account_id=account_id,
@@ -59,7 +41,7 @@ def apply_payment(
     session.add(entry)
 
     account.balance = account.balance + nominal
-    session.add(DeliveryAttempt(delivery_id=delivery_id, event_id=event_id))
+    session.flush()  # supaya entry.id ada
 
     session.commit()
 
