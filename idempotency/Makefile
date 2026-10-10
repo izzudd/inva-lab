@@ -2,7 +2,7 @@ COMPOSE = docker compose
 API     = http://localhost:58100
 ACCOUNT = 1
 
-.PHONY: up down reset check replay entries psql logs
+.PHONY: up down reset check replay entries probe psql logs
 
 up:
 	$(COMPOSE) up -d --build
@@ -33,6 +33,12 @@ entries:
 
 psql:
 	docker compose exec db psql -U inva -d inva
+
+# Bukti untuk klaim di SOLUSI.md: apa yang dilakukan ON CONFLICT DO NOTHING
+# waktu barisnya masih dipegang transaksi lain.
+probe:
+	docker compose cp scripts/probe_on_conflict.py api:/tmp/probe.py
+	docker compose exec -T api python3 /tmp/probe.py
 
 logs:
 	$(COMPOSE) logs -f api
