@@ -23,7 +23,7 @@ Ini yang terjadi di lab ini:
 | | sekarang |
 |---|---|
 | satu event dikirim ulang 4× (id pengiriman berbeda) | **4 baris** ledger untuk 1 event, saldo naik **4× nominal** |
-| satu event dikirim 20× sekaligus | **20 baris**, dan saldo cuma naik sebagian (di mesin penulis lab: 20.000 dari 200.000 yang seharusnya) |
+| satu event dikirim 20× sekaligus | **20 baris**, dan saldo cuma naik sebagian (di mesin penulis lab: 20.000–60.000 dari 200.000 yang seharusnya) |
 | request yang persis sama dikirim 2× | **1 baris**, dijawab `{"status":"ignored"}` — ini kenapa kelihatan sudah aman |
 | 3 event berbeda, masing-masing dikirim 2× | **6 baris**, saldo naik **6× nominal** |
 

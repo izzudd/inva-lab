@@ -57,21 +57,21 @@ def main() -> int:
 
     print(f"event  : {event_id}")
     print(f"jumlah : {sends} pengiriman, nominal {AMOUNT} tiap pengiriman")
-    print(f"saldo sebelum: {account['balance']:.0f}\n")
+    print(f"saldo akun sebelum event ini: {account['balance']:.0f}\n")
 
     for i in range(1, sends + 1):
         status, body = deliver(event_id, f"dlv_{uuid.uuid4().hex[:8]}", AMOUNT)
         print(f"  pengiriman {i} -> HTTP {status}: {body}")
 
-    account = get(f"/api/accounts/{ACCOUNT_ID}")
+    sesudah = get(f"/api/accounts/{ACCOUNT_ID}")["balance"]
     entries = [e for e in get(f"/api/accounts/{ACCOUNT_ID}/entries") if e["event_id"] == event_id]
 
     print()
     print(f"baris ledger untuk event ini : {len(entries)}  (harusnya 1)")
-    print(f"saldo sesudah               : {account['balance']:.0f}  (harusnya +{AMOUNT})")
+    print(f"saldo naik karena event ini  : {sesudah - account['balance']:.0f}  (harusnya +{AMOUNT})")
     print()
-    print("Kalau kamu membalik urutan dua angka itu - jumlah baris dan saldo -")
-    print("kamu akan melihat polanya. Sekarang balik ke README.")
+    print("Perhatikan dua angka itu: jumlah baris, dan berapa kali nominalnya masuk.")
+    print("Sekarang balik ke README.")
     return 0
 
 
