@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: inva
+      POSTGRES_PASSWORD: inva
+      POSTGRES_DB: inva
+    ports:
+      - "55433:5432"
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inva -d inva"]
+      interval: 2s
+      timeout: 3s
+      retries: 40
+    shm_size: 256mb
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql+psycopg2://inva:inva@db:5432/inva
+    ports:
+      - "58100:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
