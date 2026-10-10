@@ -12,19 +12,21 @@ realistis, dan punya garis akhir yang bisa diperiksa mesin. Tugasmu bukan membac
 | Lab | Topik | Bentuk masalahnya |
 |---|---|---|
 | [`n-plus-one/`](n-plus-one/) | N+1 query, index yang hilang | endpoint feed: 41 query, 1,1 detik |
+| [`idempotency/`](idempotency/) | Idempotensi, unique key, lost update | webhook: 1 event dikirim 4× jadi 4 baris ledger |
 
 ## Cara pakai
 
 ```bash
 git clone https://github.com/izzudd/inva-lab.git
-cd inva-lab/n-plus-one
+cd inva-lab/n-plus-one     # atau direktori lab mana pun
 make up      # nyalain database + API, seed data
 make bench   # lihat angkanya dulu sebelum mengubah apa pun
 make check   # target yang harus kamu capai
 ```
 
 Butuh Docker. Nggak perlu install Python, Node, atau Postgres di mesinmu — semuanya jalan di
-dalam container. Port yang dipakai: `58000` (API) dan `55432` (Postgres).
+dalam container. Port yang dipakai: `58000`/`55432` (lab `n-plus-one`), `58100`/`55433`
+(lab `idempotency`).
 
 ## Jawabannya di mana
 

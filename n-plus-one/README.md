@@ -83,3 +83,10 @@ cuma angka latency yang naik pelan-pelan sampai ada yang komplain.
 Lab ini punya satu hal yang nggak ada di tutorial: **kode awalnya kelihatan sudah benar.**
 Ada bagian di dalamnya yang sengaja ditulis dengan niat baik. Cari tahu kenapa niat baik
 itu tetap menghasilkan 41 query dan 1,1 detik.
+
+## Tulisan pendamping
+
+- Masalahnya, versi tulisan: **[Query-nya Tinggal 2, Tapi Response-nya Masih 1 Detik](https://invasikode.com/p/query-tinggal-2-tapi-response-masih-1-detik)**
+- Jawabannya juga ada di situs, di seri **[Lab](https://invasikode.com/s/lab)** — tapi sengaja
+  cuma bisa kamu buka dari tautan di ujung artikel masalahnya. Kalau kamu nyasar ke sana
+  duluan, situsnya bakal mengingatkanmu balik. Coba saja.
