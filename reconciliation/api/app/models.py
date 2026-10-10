@@ -22,27 +22,31 @@ class LedgerEntry(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     account_id: Mapped[int] = mapped_column(ForeignKey("accounts.id"))
     charge_id: Mapped[str] = mapped_column(String)      # id pembayaran di sisi gateway
-    event_id: Mapped[str] = mapped_column(String)       # id pesan/kejadian yang memberitahukannya
+    event_id: Mapped[str] = mapped_column(String)       # id pesan yang memberitahukannya
     delivery_id: Mapped[str] = mapped_column(String)    # id pengiriman pesan itu
     source: Mapped[str] = mapped_column(String)         # "webhook" atau "recon"
     amount: Mapped[Decimal] = mapped_column(Numeric(14, 2))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-class ProcessedEvent(Base):
-    """Klaim sebuah kejadian: satu event_id cuma boleh ditulis satu kali.
+class PaymentClaim(Base):
+    """Klaim satu pembayaran - bukan satu pesan.
 
-    Namanya sisa dari waktu cuma ada jalur webhook. Sekarang jalur rekonsiliasi
-    juga menulis klaimnya di sini (lihat ledger.py).
+    Primary key-nya charge_id, karena yang harus terjadi sekali itu pembayarannya,
+    bukan pesannya. Dua jalur berbeda sedang membicarakan pembayaran yang sama,
+    jadi keduanya harus berdebat di baris yang sama ini.
     """
 
-    __tablename__ = "processed_events"
+    __tablename__ = "payment_claims"
 
-    event_id: Mapped[str] = mapped_column(String, primary_key=True)
+    charge_id: Mapped[str] = mapped_column(String, primary_key=True)
+    first_seen_from: Mapped[str] = mapped_column(String)
+    first_message_id: Mapped[str | None] = mapped_column(String)
     request_fingerprint: Mapped[str] = mapped_column(String)
     response_status: Mapped[int] = mapped_column(Integer, default=200)
     response_body: Mapped[dict | None] = mapped_column(JSONB)
-    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    recorded_amount: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
+    claimed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class ReconciliationRun(Base):

@@ -6,6 +6,10 @@ Pembayaran yang sama bisa diberitahukan lewat dua jalur:
 - **job rekonsiliasi** — jalan paginya, membaca laporan settlement dan menutup
   pembayaran yang webhook-nya tidak pernah sampai.
 
+Dua jalur, satu klaim: klaimnya tentang **pembayarannya** (`charge_id`), bukan
+tentang pesannya. Yang berbeda cuma kebijakan waktu klaimnya sudah dipegang
+pihak lain - dan itu memang boleh berbeda, karena penunggunya juga berbeda.
+
 Kalau kamu perlu mengubah cara pembayaran dicatat, ini file yang tepat.
 """
 
@@ -16,7 +20,14 @@ from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
-from .models import Account, LedgerEntry, ProcessedEvent
+from .models import Account, LedgerEntry, PaymentClaim
+
+# Hasil satu baris laporan settlement.
+INSERTED = "inserted"
+SKIPPED = "skipped"
+MISMATCHED = "mismatched"
+UNKNOWN_ACCOUNT = "unknown_account"
+BUSY = "busy"
 
 
 def _write_payment(
@@ -61,13 +72,32 @@ def _write_payment(
     }
 
 
-def _claim(session: Session, claim_key: str, fingerprint: str) -> bool:
-    """Klaim satu kunci. True = kita yang dapat, False = sudah ada yang punya."""
+def _claim_payment(
+    session: Session,
+    *,
+    charge_id: str,
+    fingerprint: str,
+    nominal: Decimal,
+    source: str,
+    message_id: str,
+) -> bool:
+    """Klaim satu pembayaran. True = kita yang dapat, False = sudah ada yang punya.
+
+    Satu statement, dan kuncinya `charge_id` - sama untuk kedua jalur. Karena itu
+    jalur mana pun yang datang belakangan akan menabrak baris yang sama, bukan
+    membuat baris klaimnya sendiri.
+    """
     claimed = session.execute(
-        pg_insert(ProcessedEvent)
-        .values(event_id=claim_key, request_fingerprint=fingerprint)
-        .on_conflict_do_nothing(index_elements=[ProcessedEvent.event_id])
-        .returning(ProcessedEvent.event_id)
+        pg_insert(PaymentClaim)
+        .values(
+            charge_id=charge_id,
+            first_seen_from=source,
+            first_message_id=message_id,
+            request_fingerprint=fingerprint,
+            recorded_amount=nominal,
+        )
+        .on_conflict_do_nothing(index_elements=[PaymentClaim.charge_id])
+        .returning(PaymentClaim.charge_id)
     ).scalar_one_or_none()
 
     return claimed is not None
@@ -82,27 +112,38 @@ def record_from_webhook(
     account_id: int,
     amount: float,
 ) -> tuple[int, dict]:
-    """Jalur pertama: notifikasi langsung dari gateway."""
+    """Jalur pertama: notifikasi langsung dari gateway.
+
+    Kebijakannya: siapa pun yang mengirim ulang berhak mendapat jawaban yang sama
+    seperti jawaban pertama, karena dia masih menunggu di ujung koneksi.
+    """
     nominal = Decimal(str(amount)).quantize(Decimal("0.01"))
     fingerprint = f"{charge_id}:{nominal}"
 
     if session.get(Account, account_id) is None:
         return 404, {"status": "error", "reason": f"akun {account_id} tidak ada"}
 
-    if not _claim(session, event_id, fingerprint):
+    if not _claim_payment(
+        session,
+        charge_id=charge_id,
+        fingerprint=fingerprint,
+        nominal=nominal,
+        source="webhook",
+        message_id=event_id,
+    ):
         session.rollback()
-        previous = session.get(ProcessedEvent, event_id)
+        previous = session.get(PaymentClaim, charge_id)
 
         if previous is None:
             return 503, {
                 "status": "busy",
-                "reason": "event ini sedang diproses pengiriman lain",
+                "reason": "pembayaran ini sedang diproses pengiriman lain",
             }
 
         if previous.request_fingerprint != fingerprint:
             return 409, {
                 "status": "conflict",
-                "reason": "event_id ini sudah pernah dipakai dengan isi yang berbeda",
+                "reason": "pembayaran ini sudah pernah dicatat dengan nominal yang berbeda",
             }
 
         return previous.response_status, previous.response_body
@@ -118,8 +159,8 @@ def record_from_webhook(
     )
 
     session.execute(
-        update(ProcessedEvent)
-        .where(ProcessedEvent.event_id == event_id)
+        update(PaymentClaim)
+        .where(PaymentClaim.charge_id == charge_id)
         .values(response_status=200, response_body=body)
     )
     session.commit()
@@ -127,48 +168,60 @@ def record_from_webhook(
     return 200, body
 
 
-def record_from_settlement(session: Session, *, run_id: str, payment: dict) -> bool:
+def record_from_settlement(session: Session, *, run_id: str, payment: dict) -> str:
     """Jalur kedua: satu baris dari laporan settlement.
 
-    Mengembalikan True kalau pembayarannya baru dicatat.
-
-    Setiap baris ledger butuh id kejadian yang unik, dan jalur ini tidak punya
-    id kejadian dari gateway - jadi id-nya dibuat di sini, dari id run ditambah
-    kode charge. Klaimnya ditulis ke tabel yang sama dengan jalur webhook, biar
-    tidak perlu tabel baru.
+    Kebijakannya beda dengan jalur webhook, dan itu disengaja: yang menunggu di
+    ujung sini sebuah job, bukan koneksi HTTP. Job tidak boleh mati cuma karena
+    satu baris laporan tidak cocok - baris begitu dilaporkan, lalu dilewati.
     """
     charge_id = payment["charge_id"]
     account_id = int(payment["account_id"])
     nominal = Decimal(str(payment["amount"])).quantize(Decimal("0.01"))
-
-    claim_key = f"recon:{run_id}:{charge_id}"
     fingerprint = f"{charge_id}:{nominal}"
 
     if session.get(Account, account_id) is None:
-        return False
+        return UNKNOWN_ACCOUNT
 
-    if not _claim(session, claim_key, fingerprint):
+    if not _claim_payment(
+        session,
+        charge_id=charge_id,
+        fingerprint=fingerprint,
+        nominal=nominal,
+        source="recon",
+        message_id=run_id,
+    ):
         session.rollback()
-        return False
+        previous = session.get(PaymentClaim, charge_id)
+
+        if previous is None:
+            # Run lain masih memegang klaimnya. Baris ini akan ikut di run
+            # berikutnya - dan karena klaimnya per pembayaran, itu aman.
+            return BUSY
+
+        if previous.request_fingerprint != fingerprint:
+            return MISMATCHED
+
+        return SKIPPED
 
     body = _write_payment(
         session,
         account_id=account_id,
         charge_id=charge_id,
-        event_id=claim_key,
+        event_id=f"recon:{run_id}:{charge_id}",
         delivery_id=run_id,
         source="recon",
         nominal=nominal,
     )
 
     session.execute(
-        update(ProcessedEvent)
-        .where(ProcessedEvent.event_id == claim_key)
+        update(PaymentClaim)
+        .where(PaymentClaim.charge_id == charge_id)
         .values(response_status=200, response_body=body)
     )
     session.commit()
 
-    return True
+    return INSERTED
 
 
 def account_snapshot(session: Session, account_id: int) -> dict:
