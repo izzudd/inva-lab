@@ -16,7 +16,7 @@ ACCOUNT_ID = 3  # akun yang saldonya masih nol, biar angkanya gampang dibaca
 
 AMOUNT = 10000
 REDELIVERIES = 4          # berapa kali satu event dikirim ulang, berurutan
-CONCURRENT = 20           # berapa pengiriman bersamaan dalam satu putaran
+CONCURRENT = 30           # berapa pengiriman bersamaan dalam satu putaran
 CONCURRENT_ROUNDS = 3
 
 
@@ -301,8 +301,8 @@ def main() -> int:
     if not failed:
         print("Target tercapai. Dua hal terakhir untuk kamu periksa sendiri:")
         print("  1. `make replay` - jalankan sampai beberapa kali, angkanya harus tetap.")
-        print("  2. baca lagi SQL yang kamu pakai. Kalau kamu memutuskan di aplikasi")
-        print("     (SELECT dulu, baru INSERT), coba jelaskan kenapa check D hijau.")
+        print("  2. kalau keputusanmu ada di aplikasi (SELECT dulu, baru INSERT), lihat lagi")
+        print("     pemeriksaan D*b dan G3: 30 pengiriman bersamaan, semua harus dijawab 2xx.")
         return 0
 
     print(f"Belum selesai: {len(failed)} dari {len(all_cases)} pemeriksaan merah.")

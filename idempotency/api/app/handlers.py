@@ -10,7 +10,7 @@ from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.orm import Session
 
-from .models import Account, DeliveryAttempt, LedgerEntry, ProcessedEvent
+from .models import Account, LedgerEntry, ProcessedEvent
 
 
 def _claim_event(session: Session, event_id: str, fingerprint: str) -> bool:
@@ -40,12 +40,11 @@ def apply_payment(
 ) -> tuple[int, dict]:
     """Catat satu pembayaran yang berhasil, lalu perbarui saldo akun.
 
-    Gateway mengirim ulang event kalau jawaban dari kita tidak sampai. Pengiriman
-    ulang bukan kesalahan siapa pun dan bukan kondisi luar biasa: itu caranya
-    memastikan pesannya sampai. Jadi pengiriman ulang dijawab dengan jawaban yang
-    sama seperti pengiriman pertama.
+    Gateway mengirim ulang event kalau jawaban dari kita tidak sampai - bukan
+    karena ada yang rusak, tapi karena itu satu-satunya cara dia tahu pesannya
+    diterima. Jadi pengiriman ulang bukan kondisi luar biasa: dia datang dengan
+    jawaban yang sama seperti pengiriman pertama.
     """
-
     nominal = Decimal(str(amount)).quantize(Decimal("0.01"))
 
     # Isi request, diringkas jadi satu nilai. Dipakai untuk menjawab pertanyaan:
@@ -115,15 +114,6 @@ def apply_payment(
         update(ProcessedEvent)
         .where(ProcessedEvent.event_id == event_id)
         .values(response_status=200, response_body=body)
-    )
-
-    # Catatan percobaan pengiriman tetap dipelihara, walau keputusannya sudah
-    # pindah ke processed_events. Insert ini juga bisa bertabrakan, jadi ditulis
-    # dengan cara yang sama: tabrakan = lewati, bukan gagal.
-    session.execute(
-        pg_insert(DeliveryAttempt)
-        .values(delivery_id=delivery_id, event_id=event_id)
-        .on_conflict_do_nothing(index_elements=[DeliveryAttempt.delivery_id])
     )
 
     session.commit()

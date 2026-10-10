@@ -27,20 +27,6 @@ class LedgerEntry(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-class DeliveryAttempt(Base):
-    """Pengiriman yang pernah datang.
-
-    Tidak lagi dipakai untuk memutuskan idempotensi (itu tugas processed_events),
-    tapi tetap dicatat supaya bisa dijawab: "pengiriman ini datang berapa kali?"
-    """
-
-    __tablename__ = "delivery_attempts"
-
-    delivery_id: Mapped[str] = mapped_column(String, primary_key=True)
-    event_id: Mapped[str] = mapped_column(String)
-    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-
 class ProcessedEvent(Base):
     """Klaim satu event, sekaligus tempat menyimpan jawaban pengiriman pertama.
 

@@ -16,11 +16,3 @@ CREATE TABLE ledger_entries (
     amount      numeric(14, 2) NOT NULL,
     created_at  timestamptz NOT NULL DEFAULT now()
 );
-
--- Pengiriman yang sudah kita proses. Aplikasi memeriksa tabel ini sebelum
--- memproses sebuah pengiriman.
-CREATE TABLE delivery_attempts (
-    delivery_id  text PRIMARY KEY,
-    event_id     text NOT NULL,
-    processed_at timestamptz NOT NULL DEFAULT now()
-);
