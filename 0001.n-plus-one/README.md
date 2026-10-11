@@ -1,7 +1,7 @@
 # Lab 1 — Endpoint feed yang jalan di laptop, tumbang di produksi
 
 Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `n-plus-one/`.
+direktori `0001.n-plus-one/`.
 
 ```bash
 make up      # nyalain db + API, seed 400 post dan 750.000 komentar
