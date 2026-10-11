@@ -9,29 +9,35 @@ realistis, dan punya garis akhir yang bisa diperiksa mesin. Tugasmu bukan membac
 
 ## Daftar lab
 
+Direktori diberi prefix angka supaya urutannya kelihatan langsung di repo: kerjakan dari yang
+paling awal, karena tiap lab menganggap kamu sudah melewati lab sebelumnya.
+
 | Lab | Topik | Bentuk masalahnya |
 |---|---|---|
-| [`n-plus-one/`](n-plus-one/) | N+1 query, index yang hilang | endpoint feed: 41 query, 1,1 detik |
-| [`idempotency/`](idempotency/) | Idempotensi, unique key, lost update | webhook: 1 event dikirim 4× jadi 4 baris ledger |
-| [`reconciliation/`](reconciliation/) | Satu fakta dari dua jalur, job yang boleh diulang | webhook + job rekonsiliasi: 6 pembayaran jadi 12 baris ledger |
+| [`0001.n-plus-one/`](0001.n-plus-one/) | N+1 query, index yang hilang | endpoint feed: 41 query, 1,1 detik |
+| [`0002.idempotency/`](0002.idempotency/) | Idempotensi, unique key, lost update | webhook: 1 event dikirim 4× jadi 4 baris ledger |
+| [`0003.reconciliation/`](0003.reconciliation/) | Satu fakta dari dua jalur, job yang boleh diulang | webhook + job rekonsiliasi: 6 pembayaran jadi 12 baris ledger |
 
 ## Cara pakai
 
 ```bash
 git clone https://github.com/izzudd/inva-lab.git
-cd inva-lab/n-plus-one     # atau direktori lab mana pun
+cd inva-lab/0001.n-plus-one     # atau direktori lab mana pun
 make up      # nyalain database + API, seed data
 make bench   # lihat angkanya dulu sebelum mengubah apa pun
 make check   # target yang harus kamu capai
 ```
 
 Butuh Docker. Nggak perlu install Python, Node, atau Postgres di mesinmu — semuanya jalan di
-dalam container. Port yang dipakai: `58000`/`55432` (lab `n-plus-one`), `58100`/`55433`
-(lab `idempotency`), `58102`/`58103`/`55434` (lab `reconciliation`).
+dalam container. Port yang dipakai: `58000`/`55432` (lab `0001.n-plus-one`), `58100`/`55433`
+(lab `0002.idempotency`), `58102`/`58103`/`55434` (lab `0003.reconciliation`).
 
-Urutan yang disarankan: `n-plus-one`, lalu `idempotency`, lalu `reconciliation` — lab terakhir
-menganggap kamu sudah menyelesaikan lab idempotensi, karena kode awalnya memang hasil dari lab
-itu.
+Urutan yang disarankan: `0001.n-plus-one`, lalu `0002.idempotency`, lalu `0003.reconciliation` —
+lab terakhir menganggap kamu sudah menyelesaikan lab idempotensi, karena kode awalnya memang hasil
+dari lab itu.
+
+Nama direktori boleh berubah; nama project Docker-nya dikunci di tiap `docker-compose.yml`
+(`name:`), jadi container dan volume-mu nggak ikut berubah kalau foldernya di-rename.
 
 ## Jawabannya di mana
 
@@ -40,7 +46,7 @@ kamu mentok — kalau kamu cuma membacanya, kamu dapat ilmunya sama seperti memb
 biasa, dan itu justru yang pengin kita hindari.
 
 ```bash
-git diff main solusi -- n-plus-one/
+git diff main solusi -- 0001.n-plus-one/
 ```
 
 Tiap lab juga punya `HINTS.md` dengan tiga tingkat petunjuk. Pakai itu dulu.

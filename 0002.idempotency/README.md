@@ -1,7 +1,7 @@
 # Lab 2 — Satu pembayaran, empat baris di ledger
 
 Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `idempotency/`.
+direktori `0002.idempotency/`.
 
 ```bash
 make up      # nyalain db + API

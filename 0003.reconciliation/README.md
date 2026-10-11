@@ -1,7 +1,7 @@
 # Lab 3 — Satu pembayaran, tiga jalur
 
 Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `reconciliation/`.
+direktori `0003.reconciliation/`.
 
 ```bash
 make up      # nyalain db + API + gateway (tiruan)
