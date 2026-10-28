@@ -1,101 +1,94 @@
-# Lab 4 — Tiap nota di kafe ini isinya pesanan yang sama
+# Lab 4 — Every receipt in this café lists the same order
 
-Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `0004.mutation-and-scope/`.
+Part of the [`inva-lab`](../README.md) repo. Every command below is run from the
+`0004.mutation-and-scope/` directory.
 
 ```bash
-make demo    # ceritanya: tiga meja pesan, lihat notanya
-make check   # target lab ini
+make demo    # the story: three tables order, look at the receipts
+make check   # this lab's target
 ```
 
-Malam yang ramai. Barista buka tiga meja, tiap meja pesan satu barang. Lalu barista lapor:
-**nota tiap meja isinya sama semua** — kopi, teh, roti, ketiganya — padahal tiap meja cuma
-pesan satu barang. Dan tiap nota bilang totalnya **Rp0**. Rekap kas harian di ujung juga
-Rp0, padahal seharian jualan.
+A busy night. The barista opens three tables, each table orders one item. Then the barista reports:
+**every table's receipt holds the same items** — coffee, tea, bread, all three — even though each table
+ordered one thing. And every receipt says the total is **Rp0**. The daily till at the end is Rp0 too,
+despite a full night of sales.
 
-Ini yang keluar waktu `make demo` dijalankan di mesin yang bikin lab ini:
+This is what comes out when `make demo` runs on the machine this lab was built on:
 
-| | sekarang |
+| | now |
 |---|---|
-| tiga meja (1, 3, 5), masing-masing pesan satu barang | tiap nota isinya **3 item yang sama**: `kopi x2, teh x1, roti x1` |
-| total nota tiap meja | **Rp0** (harusnya meja 1 Rp30.000, meja 3 Rp8.000, meja 5 Rp12.000) |
-| kas harian setelah tiga meja jualan | **Rp0** (harusnya Rp50.000) |
-| `make check` | **6 dari 6** pemeriksaan merah |
+| three tables (1, 3, 5), each ordering one item | every receipt holds **the same 3 items**: `kopi x2, teh x1, roti x1` |
+| each receipt's total | **Rp0** (table 1 should be Rp30,000, table 3 Rp8,000, table 5 Rp12,000) |
+| daily till after three tables of sales | **Rp0** (should be Rp50,000) |
+| `make check` | **6 of 6** checks red |
 
-Nggak ada error, nggak ada exception. Kodenya jalan sampai selesai, dan tiap fungsi
-kelihatan masuk akal kalau dibaca sekilas. Masalahnya bukan di satu tempat — ada tiga, dan
-masing-masing punya obat yang beda.
+No errors, no exceptions. The code runs to completion, and every function looks sensible at a glance.
+The problem is not in one place — there are three, and each has a different cure.
 
-## Lab ini beda dari tiga lab sebelumnya
+## This lab is different from the previous three
 
-Lab `0001`–`0003` itu FastAPI + Postgres + Docker. Lab ini **bukan**. Lab ini cukup **Python
-3 standar** — tanpa Docker, tanpa database, tanpa `pip install`.
+Labs `0001`–`0003` run on FastAPI + Postgres + Docker. This one does not. It needs only **standard
+Python 3** — no Docker, no database, no `pip install`.
 
-Alasannya: lab ini untuk pembaca seri **Konsep Dasar Pemrograman**, yang mungkin baru
-belajar Python dan belum punya Docker di mesinnya. Kalau kamu harus install Docker dulu
-sebelum bisa mulai belajar, kamu berhenti di langkah nol. Jadi di sini kamu cuma butuh satu
-hal: `python3` yang sudah ada di hampir semua mesin. Semua kode ada di satu file, `kasir.py`.
+The reason: this lab is for readers of the **Programming Fundamentals** series, who may be new to
+Python and do not have Docker on their machine. If you have to install Docker before you can start
+learning, you stop at step zero. So here you need exactly one thing: `python3`, which exists on almost
+every machine. All the code is in one file, `kasir.py`.
 
-## Misi kamu
+## Your mission
 
-Bikin `make check` hijau. Tiga syarat:
+Make `make check` green. Three conditions:
 
-1. **Tiap nota cuma punya isi pesanan meja itu.** Meja yang belum pesan apa-apa notanya
-   tetap kosong. Dua meja yang pesan menu beda nggak boleh saling ketuker.
-2. **Total nota dihitung dari itemnya.** Jumlah item dan qty-nya ikut dikalikan, bukan
-   sekadar dibiarkan Rp0.
-3. **Kas harian bertambah sebesar yang benar-benar terjual.** Jual Rp32.000 → kas naik
-   Rp32.000.
+1. **Each receipt holds only its own table's order.** A table that has not ordered yet keeps an empty
+   receipt. Two tables with different orders must not swap contents.
+2. **Each total is computed from its items.** Item count and qty multiply, instead of staying at Rp0.
+3. **The daily till rises by what was actually sold.** Sell Rp32,000 → the till rises Rp32,000.
 
-Boleh mengubah apa saja di `kasir.py`, asal tiga fungsi publiknya tetap bisa dipanggil
-dengan cara yang sama seperti sekarang — `pesanan_baru(meja)`, `tambah_item(pesanan, nama,
-qty=1)`, `total_kas()`. Nama `MENU` juga dipakai `make demo`. `make check` memanggil
-ketiganya persis seperti itu.
+You may change anything in `kasir.py`, as long as its three public functions can still be called the
+way they are called now — `pesanan_baru(meja)`, `tambah_item(pesanan, nama, qty=1)`, `total_kas()`. The
+`MENU` name is used by `make demo` too. `make check` calls all three exactly like that.
 
-## Di mana mulainya
+## Where to start
 
 ```bash
-make demo    # ceritanya, bukan angkanya
-make check   # lihat sendiri pemeriksaan mana yang merah
+make demo    # the story, not the numbers
+make check   # see for yourself which checks are red
 ```
 
-Terus buka `kasir.py` dan baca dari atas. Tiap fungsi punya komentar yang menjelaskan niat
-penulisnya. Niatnya bagus. Cari tahu kenapa niat yang bagus tetap menghasilkan nota yang
-salah.
+Then open `kasir.py` and read from the top. Every function has a comment explaining its author's
+intent. The intent is good. Find out why good intent still produces the wrong receipt.
 
-## Sebelum buka jawabannya
+## Before you open the answer
 
-Kalau macet, buka `HINTS.md` sesuai urutan. Jangan lompat ke hint 3.
+If you get stuck, open `HINTS.md` in order. Do not jump to hint 3.
 
-- nyangkut 30 menit → hint 1
-- nyangkut 60 menit → hint 2
-- menyerah → hint 3, dan **tulis di mana kamu nyerah**
+- stuck 30 minutes → hint 1
+- stuck 60 minutes → hint 2
+- giving up → hint 3, and **write down where you gave up**
 
-Jangan buka branch `solusi` sebelum kamu benar-benar mentok.
+Do not open the `solusi` branch before you are genuinely stuck.
 
-## Kenapa ini ada
+## Why this exists
 
-Kebanyakan orang belajar "fungsi" dari contoh yang cuma dipanggil sekali. Di kenyataan,
-fungsi dipanggil berkali-kali, dan dua hal yang jarang diajarkan justru yang bikin lab ini
-rusak:
+Most people learn "functions" from examples that get called once. In reality functions get called
+repeatedly, and the two things rarely taught alongside that are exactly what breaks this lab:
 
-- **Nilai default sebuah fungsi dihitung sekali, bukan tiap panggil.** Kalau default-nya
-  benda yang bisa berubah (list, dict), benda itu dibagi ke semua pemanggil — selamanya.
-- **Menulis `x = ...` di dalam fungsi cuma menyentuh nama `x` di fungsi itu.** Kalau yang
-  kamu mau ubah sebenarnya ada di luar (di dalam sebuah dict, atau di scope modul), kamu
-  harus menyentuh benda atau nama yang benar.
+- **A function's default value is computed once, not per call.** If the default is a mutable object (a
+  list, a dict), that object is shared with every caller — forever.
+- **Writing `x = ...` inside a function only touches the name `x` in that function.** If what you mean
+  to change lives outside (inside a dict, or in module scope), you have to touch the right object or
+  the right name.
 
-Dua-duanya kelihatan sepele waktu kamu membacanya, dan baru kelihatan waktu kodenya
-dipakai lebih dari sekali. Itu bedanya baca tutorial dengan mentok sendiri.
+Both look trivial while you read them, and both only show up when the code is used more than once.
+That is the difference between reading a tutorial and getting stuck yourself.
 
-## Batas lab ini
+## The limits of this lab
 
-- **Ini bukan pelajaran tentang class.** Di sini semua state-nya cuma dict dan variabel
-  modul. Dunia nyata sering menyelesaikan masalah ini dengan class — tapi class cuma nama
-  lain untuk hal yang sama: kamu tetap harus tahu benda mana yang kamu pegang dan mana yang
-  kamu ubah.
-- **Variabel global bukan jawaban yang selalu benar.** Di lab ini `TOTAL_KAS` global itu
-  bentuk paling sederhana. Begitu ada lebih dari satu kasir jalan bersamaan, satu variabel
-  global nggak cukup — dan itu cerita lab lain.
-- **Nilai default yang salah bukan satu-satunya jebakan "sekali".** Hal yang sama berlaku
-  buat cache, koneksi, dan apa pun yang dibangun waktu modulnya pertama diimpor.
+- **This is not a lesson about classes.** Here all the state is a dict and a module variable. The real
+  world often solves problems of this shape with a class — but a class is just another name for the same
+  thing: you still have to know which object you are holding and which one you are changing.
+- **A global variable is not always the right answer.** In this lab a global `TOTAL_KAS` is the simplest
+  shape. Once more than one till runs at the same time, one global variable is not enough — and that is
+  another lab's story.
+- **A wrong default value is not the only "computed once" trap.** The same applies to caches,
+  connections, and anything built when the module is first imported.

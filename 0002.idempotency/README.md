@@ -1,105 +1,99 @@
-# Lab 2 — Satu pembayaran, empat baris di ledger
+# Lab 2 — One payment, four ledger rows
 
-Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `0002.idempotency/`.
+Part of the [`inva-lab`](../README.md) repo. Every command below is run from the `0002.idempotency/`
+directory.
 
 ```bash
-make up      # nyalain db + API
-make replay  # putar ulang satu event, seperti yang dilakukan gateway
-make check   # target lab ini
+make up      # start the db + API
+make replay  # replay one event, the way the gateway does
+make check   # this lab's target
 ```
 
-`POST /webhooks/payments` menerima notifikasi pembayaran dari gateway. Di laptop, dengan tiga
-akun dan dua event, endpoint ini jalan mulus: satu request masuk, satu baris ledger keluar,
-saldo naik. Nggak ada yang kelihatan salah — dan memang, kodenya nggak salah.
+`POST /webhooks/payments` receives payment notifications from the gateway. On a laptop, with three
+accounts and two events, this endpoint runs smoothly: one request in, one ledger row out, balance up.
+Nothing looks wrong — and indeed the code is not wrong.
 
-Yang nggak kelihatan: **HTTP nggak punya cara memberi tahu pengirim bahwa jawaban kita
-sampai.** Gateway mengirim event, kita commit transaksinya, lalu jawabannya hilang di jalan —
-koneksi putus, load balancer timeout, container kita di-restart sedetik terlalu cepat. Dari
-sisi kita semuanya beres. Dari sisi gateway, eventnya belum pernah diterima, jadi dia kirim
-lagi. Besoknya lagi.
+What you cannot see: **HTTP has no way to tell the sender that our answer arrived.** The gateway sends
+an event, we commit the transaction, then the answer is lost on the way back — connection dropped,
+load balancer timed out, our container restarted a second too early. From our side everything is
+done. From the gateway's side the event was never received, so it sends again. And again tomorrow.
 
-Itu bukan gateway yang rusak. Itu satu-satunya pilihan yang dia punya, dan dia memilih **dobel
-daripada hilang** — karena kehilangan pembayaran lebih mahal daripada mengulangnya. Dobelnya
-jadi pekerjaanmu.
+That is not a broken gateway. It is the only option it has, and it chooses **duplicate over lost** —
+because losing a payment costs more than repeating one. The duplicate becomes your work.
 
-Ini yang terjadi di lab ini:
+This is what happens in this lab:
 
-| | sekarang |
+| | now |
 |---|---|
-| satu event dikirim ulang 4× | **4 baris** ledger untuk 1 event, saldo naik **4× nominal** |
-| satu event dikirim 30× sekaligus | **30 baris**, dan saldo cuma naik sebagian (di mesin penulis lab: 40.000–60.000 dari 300.000 yang seharusnya) |
-| 3 event berbeda, masing-masing dikirim 2× | **6 baris**, saldo naik **6× nominal** |
-| request yang persis sama dikirim 2× | **2 baris** — nggak ada apa pun di database yang bisa membedakan mana yang sudah pernah diproses |
+| one event redelivered 4× | **4** ledger rows for 1 event, balance up **4× the amount** |
+| one event delivered 30× at once | **30 rows**, and the balance only partly rises (on the lab author's machine: 40,000–60,000 out of the 300,000 it should be) |
+| 3 different events, each delivered 2× | **6 rows**, balance up **6× the amount** |
+| the exact same request sent 2× | **2 rows** — nothing in the database can tell which one was already processed |
 
-## Misi kamu
+## Your mission
 
-Bikin `make check` hijau. Empat syarat:
+Make `make check` green. Four conditions:
 
-1. **Tepat sekali.** Satu event diterapkan tepat satu kali. Tidak dobel, dan tidak ada yang
-   hilang: tiga event berbeda tetap jadi tiga baris ledger, bukan enam, bukan dua.
-2. **Pengiriman ulang dijawab seperti jawaban pertama.** Bukan error, bukan pesan "sudah
-   diproses" — body yang sama, dengan `entry_id` yang sama. Ini berlaku juga saat pengiriman
-   ulangnya datang bersamaan. Alasannya bukan sekadar sopan: jawaban yang dihitung ulang dari
-   keadaan database **saat itu** bisa salah, karena saldonya sudah berubah oleh event lain.
-   Yang benar adalah jawaban dari percobaan pertama, apa adanya.
-3. **`event_id` yang dipakai ulang dengan isi berbeda tidak ikut diproses.** Nominal yang
-   berbeda untuk event yang sama tidak boleh masuk ke ledger.
-4. **Saldo tetap benar saat banyak event datang bersamaan.** Tiga puluh event *berbeda* yang
-   datang sekaligus harus menaikkan saldo tiga puluh kali nominal, bukan dua kali. Ini datang
-   dari komplain kedua, bukan dari yang pertama: ada merchant yang saldonya lebih kecil dari
-   yang seharusnya, dan gateway-nya tidak salah.
+1. **Exactly once.** One event is applied exactly once. Not doubled, nothing lost: three different
+   events stay three ledger rows, not six, not two.
+2. **A redelivery is answered like the first response.** Not an error, not an "already processed"
+   message — the same body, with the same `entry_id`. This also holds when the redelivery arrives
+   concurrently. The reason is not politeness: an answer recomputed from the database **as it is
+   now** can be wrong, because other events have moved the balance. The correct answer is the first
+   attempt's answer, as-is.
+3. **A reused `event_id` with different content is not processed.** A different amount for the same
+   event must not reach the ledger.
+4. **The balance stays correct when many events arrive at once.** Thirty *different* events arriving
+   together must raise the balance thirty times the amount, not twice. This comes from the second
+   complaint, not the first: a merchant ended up with less than they should, and the gateway was not
+   at fault.
 
-Boleh mengubah apa saja, kecuali:
+You may change anything except:
 
-- bentuk response `GET /api/accounts/:id` dan `GET /api/accounts/:id/entries` — itu alat
-  ukurmu, dan `make check` membacanya
-- isi `db/init/02_seed.sql`
+- the response shape of `GET /api/accounts/:id` and `GET /api/accounts/:id/entries` — that is your
+  measuring instrument, and `make check` reads it
+- the contents of `db/init/02_seed.sql`
 
-## Di mana mulainya
+## Where to start
 
 ```bash
-make replay    # 4 pengiriman untuk satu event, lalu dua angka di bawahnya
-make entries   # saldo + seluruh baris ledger akun 3
-make psql      # masuk ke database
-make logs      # log API, kalau ada yang membalas error
+make replay    # 4 deliveries for one event, then two numbers below it
+make entries   # balance + every ledger row for account 3
+make psql      # into the database
+make logs      # API logs, if something is answering with an error
 ```
 
-## Sebelum buka jawabannya
+## Before you open the answer
 
-Kalau macet, buka `HINTS.md` sesuai urutan. Jangan lompat ke hint 3.
+If you get stuck, open `HINTS.md` in order. Do not jump to hint 3.
 
-- nyangkut 45 menit → hint 1
-- nyangkut 90 menit → hint 2
-- menyerah → hint 3, dan **tulis di mana kamu nyerah** — itu bagian dari lab ini, bukan
-  kegagalan
+- stuck 45 minutes → hint 1
+- stuck 90 minutes → hint 2
+- giving up → hint 3, and **write down where you gave up** — that is part of this lab, not a failure
 
-Jangan buka branch `solusi` sebelum kamu benar-benar mentok.
+Do not open the `solusi` branch before you are genuinely stuck.
 
-## Kenapa ini ada
+## Why this exists
 
-Idempotensi bukan soal "menambah pengecekan". Ini soal memutuskan **siapa yang berhak
-memutuskan** apakah sesuatu sudah pernah terjadi: aplikasimu, atau database.
+Idempotency is not about "adding a check". It is about deciding **who is entitled to decide** whether
+something already happened: your application, or the database.
 
-Di lab ini ada dua bug dan satu jebakan, dan ketiganya ada karena keputusan itu diambil di
-tempat yang salah. Yang pertama kelihatan setelah kamu memperbaiki bugnya, bukan sebelum —
-dan di situlah muncul "duplicate key value violates unique constraint" yang mungkin sudah
-tidak asing buatmu.
+This lab has two bugs and one trap, and all three exist because that decision was made in the wrong
+place. The first one only becomes visible *after* you fix the bug, not before — and that is where
+"duplicate key value violates unique constraint" shows up, which may already be familiar to you.
 
-Kode awalnya kelihatan sudah benar, dan itu disengaja. Ada bagian di dalamnya yang ditulis
-dengan niat baik, lengkap dengan komentar yang menjelaskan kenapa bagian itu ada. Baca
-komentarnya pelan-pelan: itu satu-satunya penjagaan yang dimiliki endpoint ini, dan itu
-penjagaan yang salah tempat.
+The starting code looks correct, deliberately. Part of it was written with good intentions, complete
+with a comment explaining why that part exists. Read the comment slowly: it is the only guard this
+endpoint has, and it is a guard in the wrong place.
 
-## Batas lab ini
+## The limits of this lab
 
-Dua hal yang **tidak** ada di sini, dan sengaja: keduanya lebih sulit daripada yang ada.
+Two things are **not** here, on purpose, and both are harder than what is.
 
-- **Efek samping ke luar database.** Kalau handler-mu juga mengirim email atau memanggil API
-  pihak ketiga, "taruh di satu transaksi" nggak menolong: email nggak bisa di-rollback. Itu
-  pola outbox, dan itu bukan lab ini.
-- **Fakta yang datang dari dua jalur.** Di sini satu pembayaran cuma punya satu jalur: webhook
-  gateway. Begitu ada job rekonsiliasi yang menutup pembayaran yang webhook-nya telat, semua
-  kunci yang kamu pakai di lab ini berhenti bekerja — dan yang bekerja tinggal kunci yang
-  berasal dari domainnya sendiri (nomor referensi pembayaran), bukan dari transportnya. Itu
-  lab berikutnya.
+- **Side effects outside the database.** If your handler also sends email or calls a third-party API,
+  "put it in one transaction" does not help: email cannot be rolled back. That is the outbox pattern,
+  and it is not this lab.
+- **A fact arriving from two paths.** Here one payment has exactly one path: the gateway webhook. As
+  soon as a reconciliation job closes payments whose webhook was late, every key you use in this lab
+  stops working — and the only one that keeps working is the key that comes from the domain itself
+  (the payment reference), not from the transport. That is the next lab.

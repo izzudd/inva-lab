@@ -1,35 +1,33 @@
 # Hints
 
-Buka satu per satu. Tiap hint cuma kasih pertanyaan berikutnya, bukan jawabannya.
+Open them one at a time. Each hint only gives you the next question, not the answer.
 
 ---
 
-## Hint 1 — dari mana 41 query itu
+## Hint 1 — where those 41 queries come from
 
-Empat puluh satu query. Kelompokkan dulu angkanya sebelum mengubah apa pun.
+Forty-one queries. Group the number before changing anything.
 
-Ada tiga kelompok. Satu untuk daftar post. Dua kelompok lagi, masing-masing muncul sekali
-per post yang kamu proses — dan itu berarti keduanya ada di dalam perulangan.
+There are three groups. One for the post list. Two more, each appearing once per post you process —
+which means both are inside a loop.
 
-Setelah ketemu, jangan benerin dua-duanya sekaligus. Jawab dulu: **dari dua kelompok itu,
-mana yang sebenarnya bikin lambat?** Salah satu kelompok jauh lebih mahal dari yang lain.
-Kalau kamu salah menebak, kamu bakal benerin yang murah, melihat hasilnya hampir nggak
-berubah, dan bingung.
+Once you find them, do not fix both at once. Answer this first: **of those two groups, which one is
+actually making it slow?** One is far more expensive than the other. Guess wrong and you will fix the
+cheap one, see almost no change, and get confused.
 
-Petunjuk untuk memutuskan: bandingkan kolom apa yang dipakai untuk mencari di masing-masing
-kelompok. Satu kelompok mencari berdasarkan kunci utama — itu pencarian paling murah yang
-bisa dilakukan database. Kelompok yang lain mencari berdasarkan kolom biasa.
+A hint for deciding: compare which column each group searches on. One group looks things up by
+primary key — the cheapest search a database can do. The other searches on an ordinary column.
 
 ---
 
-## Hint 2 — query-nya sudah 2, kok masih merah
+## Hint 2 — the query count is 2, so why is it still red
 
-Selamat, query kamu tinggal 2. Sekarang lihat baris kedua `make check`: masih sekitar
-60 ms, dan targetnya 30 ms.
+Congratulations, you are down to 2 queries. Now look at the second line of `make check`: still around
+60 ms, against a 30 ms target.
 
-Query-nya sedikit. Berarti masalahnya bukan jumlahnya.
+Few queries. So the problem is not the count.
 
-Jawab ini di luar aplikasi:
+Answer this outside the application:
 
 ```bash
 make psql
@@ -39,51 +37,47 @@ make psql
 EXPLAIN ANALYZE SELECT count(*) FROM comments WHERE post_id = 7;
 ```
 
-Perhatikan dua hal: jenis scan-nya apa, dan berapa baris yang dibaca untuk menghasilkan
-satu angka.
+Watch two things: what kind of scan it is, and how many rows it reads to produce one number.
 
-750.000 baris dibaca untuk menjawab satu pertanyaan sederhana "ada berapa komentar di post
-ini". Pertanyaan berikutnya: kenapa Postgres membaca sejauh itu, padahal kamu hanya minta
-satu angka?
+750,000 rows read to answer one simple question, "how many comments does this post have". The next
+question: why does Postgres read that far when you only asked for one number?
 
 ---
 
-## Hint 3 — dua perbaikan, di dua tempat berbeda
+## Hint 3 — two fixes, in two different places
 
-Ada **dua** hal yang harus berubah, dan keduanya bukan di file yang sama.
+There are **two** things that must change, and neither is in the same file.
 
-**1. Di aplikasi.** Query yang terakhir tersisa, yang menghitung komentar, dijalankan
-sekali per post. Padahal kamu nggak butuh barisnya sama sekali — kamu cuma butuh angkanya.
-Kumpulkan semua id post dalam satu halaman, lalu ambil seluruh angkanya dalam **satu** query
-yang dikelompokkan (`GROUP BY`).
+**1. In the application.** The last remaining query, the one counting comments, runs once per post.
+You do not need the rows at all — you need the number. Collect every post id on the page, then fetch
+all the numbers in **one** grouped query (`GROUP BY`).
 
-Sampai sini: 2 query, tapi `make check` masih merah di baris latency.
+At this point: 2 queries, but `make check` is still red on the latency line.
 
-**2. Di database.** `comments.post_id` nggak punya index. Ini bagian yang paling sering
-diabaikan, karena "kodenya sudah benar" — dan memang benar, yang salah datanya.
+**2. In the database.** `comments.post_id` has no index. This is the part most often skipped,
+because "the code is correct" — and it is correct, the data is what is wrong.
 
-Di produksi, tabel `comments` nggak akan kosong, jadi index harus dibuat tanpa mengunci
-tabel:
+In production `comments` will never be empty, so the index has to be created without locking the
+table:
 
 ```sql
 CREATE INDEX CONCURRENTLY idx_comments_post_id ON comments (post_id);
 ```
 
-Kenapa `CONCURRENTLY` penting, dan apa harganya — itu pertanyaan untuk lab berikutnya.
+Why `CONCURRENTLY` matters, and what it costs — that is a question for the next lab.
 
 ---
 
-## Jebakan yang harus kamu hindari
+## The trap to avoid
 
-Cara paling cepat membuat query jadi 2 adalah memangggil relasi komentarnya sekaligus, lalu
-memakai `len()` di atasnya. Ini terasa seperti jawaban yang benar, karena *eager loading*
-memang solusi yang ditulis di hampir semua artikel tentang N+1.
+The fastest way to get the query count to 2 is to eager load the comment relation and then call
+`len()` on it. It feels like the right answer, because *eager loading* is the fix written in almost
+every article about N+1.
 
-Query-nya langsung jadi 2. Tapi perhatikan `make check`: **masih ~1.000 ms.**
+The query count drops to 2 immediately. But look at `make check`: **still ~1,000 ms.**
 
-Yang terjadi: 20 post × ~1.875 komentar = **37.500 baris** dipindahkan dari database ke
-memori aplikasi, cuma supaya Python bisa menghitungnya dengan `len()`. Database berhenti
-bekerja keras; sekarang aplikasi yang bekerja keras. Tambahkan index pun nggak menolongnya —
-data itu tetap harus menyeberang.
+What happens: 20 posts × ~1,875 comments = **37,500 rows** moved from the database into application
+memory, just so Python can count them with `len()`. The database stops working hard; now the
+application does. Adding an index does not help either — the data still has to cross.
 
-Menghitung nggak butuh datanya. Butuh angkanya.
+Counting does not need the data. It needs the number.

@@ -1,92 +1,88 @@
-# Lab 1 — Endpoint feed yang jalan di laptop, tumbang di produksi
+# Lab 1 — A feed endpoint that runs on your laptop and falls over in production
 
-Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `0001.n-plus-one/`.
+Part of the [`inva-lab`](../README.md) repo. Every command below is run from the `0001.n-plus-one/`
+directory.
 
 ```bash
-make up      # nyalain db + API, seed 400 post dan 750.000 komentar
-make bench   # lihat sendiri angkanya
-make check   # target lab ini
+make up      # start the db + API, seed 400 posts and 750,000 comments
+make bench   # look at the numbers yourself
+make check   # this lab's target
 ```
 
-Endpoint `GET /api/posts?limit=20` mengembalikan 20 post terbaru, lengkap dengan nama
-penulis dan jumlah komentarnya. Di laptop dengan data dummy, endpoint ini kelihatan biasa
-saja dan nggak ada yang salah dengan kodenya.
+`GET /api/posts?limit=20` returns the 20 latest posts with each one's author name and comment count.
+On a laptop with dummy data this endpoint looks unremarkable, and nothing about the code looks wrong.
 
-Di sini:
+Here:
 
-| | sekarang |
+| | now |
 |---|---|
-| query ke database per request | **41** |
-| latency p95 | **~1.100 ms** |
+| queries to the database per request | **41** |
+| p95 latency | **~1,100 ms** |
 
-Server tidak error. Tidak lambat di kasus tertentu saja. Dia konsisten lambat di setiap
-request — dan itu yang bikin masalahnya nggak kelihatan di staging, karena staging-nya
-kosong.
+The server is not erroring. It is not slow only in certain cases. It is consistently slow on every
+request — which is exactly why the problem never shows up in staging, because staging is empty.
 
-## Misi kamu
+## Your mission
 
-Bikin `make check` hijau:
+Make `make check` green:
 
-- query per request **≤ 3**
-- latency p95 **≤ 30 ms**
+- queries per request **≤ 3**
+- p95 latency **≤ 30 ms**
 
-Satu syarat yang nggak bisa dinegosiasikan: **hasilnya harus tetap sama.** Bandingkan body
-response sebelum dan sesudah perubahan. Kalau komentar yang seharusnya 1.875 jadi 0, kamu
-belum selesai — kamu cuma memindahkan masalahnya.
+One condition is not negotiable: **the result has to stay the same.** Compare the response body
+before and after your change. If the comments that should be 1,875 become 0, you are not done — you
+only moved the problem.
 
-Boleh mengubah apa saja, kecuali:
+You may change anything except:
 
-- kontrak response (`id`, `title`, `author`, `comment_count`)
-- jumlah data di `db/init/02_seed.sql` — dataset ini titik soalnya, bukan variabelnya
+- the response contract (`id`, `title`, `author`, `comment_count`)
+- the size of the data in `db/init/02_seed.sql` — this dataset is the question, not a variable
 
-## Soal angka 30 ms
+## About that 30 ms
 
-Itu anggaran lab ini, bukan hukum alam. Angka itu dipilih supaya *dua lapis* masalah di
-endpoint ini sama-sama wajib dibereskan — kalau kamu cuma mengerjakan salah satunya, satu
-baris di `make check` tetap merah, dan itu memang tujuannya.
+It is this lab's budget, not a law of nature. The number was chosen so that *both layers* of the
+problem in this endpoint have to be fixed — fix only one and a line in `make check` stays red, which
+is the whole point.
 
-Supaya kamu nggak perlu percaya begitu saja: biaya endpoint ini sudah diukur di dua ukuran
-dataset. 300.000 baris komentar → 36 ms. 750.000 baris → 60 ms. Hampir sebanding dengan
-jumlah baris, bukan tetap. Kalau kamu mau membuktikannya sendiri, ubah seed jadi 3× lipat,
-`make reset`, lalu `make bench` lagi.
+So you do not have to take it on faith: this endpoint's cost has been measured at two dataset sizes.
+300,000 comment rows → 36 ms. 750,000 rows → 60 ms. Nearly proportional to row count, not constant. If
+you want to prove it yourself, multiply the seed by 3, run `make reset`, then `make bench` again.
 
-## Di mana mulainya
+## Where to start
 
-Lihat header `X-Db-Query-Count` di setiap response. Itu alat ukur kamu.
+Look at the `X-Db-Query-Count` header on every response. That is your measuring instrument.
 
 ```bash
-make explain   # satu request, cuma header query count-nya
-make psql      # masuk ke database, untuk EXPLAIN ANALYZE
+make explain   # one request, just the query-count header
+make psql      # into the database, for EXPLAIN ANALYZE
 ```
 
-Kalau kamu belum pernah pakai `EXPLAIN ANALYZE`, sekarang waktu yang tepat. Tapi jangan
-asal pakai: tulis dulu dugaanmu, baru bandingkan dengan kenyataan.
+If you have never used `EXPLAIN ANALYZE`, now is the time. But do not use it blindly: write down your
+guess first, then compare it against reality.
 
-## Sebelum buka jawabannya
+## Before you open the answer
 
-Kalau macet, buka `HINTS.md` sesuai urutan. Jangan lompat ke hint 3.
+If you get stuck, open `HINTS.md` in order. Do not jump to hint 3.
 
-- nyangkut 45 menit → hint 1
-- nyangkut 90 menit → hint 2
-- menyerah → hint 3, dan **tulis di mana kamu nyerah** — itu bagian dari lab ini, bukan
-  kegagalan
+- stuck 45 minutes → hint 1
+- stuck 90 minutes → hint 2
+- giving up → hint 3, and **write down where you gave up** — that is part of this lab, not a failure
 
-Jangan buka branch `solusi` sebelum kamu benar-benar mentok.
+Do not open the `solusi` branch before you are genuinely stuck.
 
-## Kenapa ini ada
+## Why this exists
 
-Di tutorial, kamu bikin endpoint, datanya 20 baris, response-nya 8 ms, selesai. Di
-produksi, kode yang sama jalan di atas ratusan ribu baris, dan yang muncul bukan error —
-cuma angka latency yang naik pelan-pelan sampai ada yang komplain.
+In a tutorial you build an endpoint, the data is 20 rows, the response takes 8 ms, done. In
+production the same code runs over hundreds of thousands of rows, and what shows up is not an error —
+just a latency number creeping up until someone complains.
 
-Lab ini punya satu hal yang nggak ada di tutorial: **kode awalnya kelihatan sudah benar.**
-Ada bagian di dalamnya yang sengaja ditulis dengan niat baik. Cari tahu kenapa niat baik
-itu tetap menghasilkan 41 query dan 1,1 detik.
+This lab has one thing tutorials do not: **the starting code looks correct.** Part of it is
+deliberately written with good intentions. Find out why good intentions still produce 41 queries and
+1.1 seconds.
 
-## Tulisan pendamping
+## Companion reading
 
-- Masalahnya, versi tulisan: **[Query-nya Tinggal 2, Tapi Response-nya Masih 1 Detik](https://invasikode.com/p/query-tinggal-2-tapi-response-masih-1-detik)**
-- Jawabannya juga ada di situs, di seri **[Lab](https://invasikode.com/s/lab)** — tapi sengaja
-  cuma bisa kamu buka dari tautan di ujung artikel masalahnya. Kalau kamu nyasar ke sana
-  duluan, situsnya bakal mengingatkanmu balik. Coba saja.
+- The story version: **[Two Queries Left, Still One Second](https://invasikode.com/p/query-tinggal-2-tapi-response-masih-1-detik)**
+- The answer is also on the site, in the **[Lab](https://invasikode.com/s/lab)** series — but on
+  purpose you can only reach it from the link at the end of the problem article. Land there first and
+  the site will send you back. Try it.
