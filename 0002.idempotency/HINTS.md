@@ -1,95 +1,91 @@
 # Hints
 
-Buka satu per satu. Tiap hint cuma kasih pertanyaan berikutnya, bukan jawabannya.
+Open them one at a time. Each hint only gives you the next question, not the answer.
 
 ---
 
-## Hint 1 — kenapa 4 baris, padahal ini satu pembayaran
+## Hint 1 — why 4 rows when this is one payment
 
-Jalankan `make replay`. Empat pengiriman, satu event, satu baris yang seharusnya.
+Run `make replay`. Four deliveries, one event, one row that should exist.
 
-Pertanyaan pertama bukan "di mana bugnya" — di kode itu memang nggak ada bug. Pertanyaan
-pertama: **kenapa gateway mengirim ulang?**
+The first question is not "where is the bug" — there is no bug in that code. The first question is:
+**why does the gateway redeliver?**
 
-Jawabannya ada di dokumen mereka, dan bunyinya kira-kira: "kalau kami tidak menerima balasan
-2xx, kami mengirim ulang". Sekarang pertanyaan kedua, dan ini yang penting: percobaan pertama
-kamu balas dengan 200. Jadi **kenapa mereka nggak tahu?**
+The answer is in their docs, roughly: "if we do not receive a 2xx answer, we send it again". Now the
+second question, the important one: your first attempt was answered with 200. So **why do they not
+know that?**
 
-Coba jawab dulu sebelum lanjut. Kalau kamu nggak bisa, kamu belum tahu di mana masalahnya —
-kamu cuma tahu ada yang salah. (Baris yang perlu kamu lihat cuma dua: `session.commit()`, dan
-`return` setelahnya.)
+Try to answer before moving on. If you cannot, you do not yet know where the problem is — you only
+know something is wrong. (The only two lines you need to look at: `session.commit()`, and the
+`return` after it.)
 
-Pertanyaan ketiga: kalau pengiriman ulang itu normal, dan bukan kesalahan siapa pun, **siapa
-yang seharusnya memutuskan bahwa event ini sudah pernah diterima?** Dan di mana keputusan itu
-disimpan sampai besok?
+Third question: if redelivery is normal and nobody's fault, **who should decide that this event was
+already received?** And where does that decision live until tomorrow?
 
 ---
 
-## Hint 2 — sudah kamu pasang unique key, sekarang malah ribut
+## Hint 2 — you added the unique key, and now it is noisy
 
-Sesudah kamu memberi database wewenang memutuskan (unique key di kolom yang benar), `make
-check` yang tadinya merah di beberapa tempat sekarang menghasilkan hal baru: log API penuh
-`duplicate key value violates unique constraint`, dan pengiriman ulang dijawab **HTTP 500**.
+Once you give the database authority to decide (a unique key on the right column), `make check` — which
+was red in several places — produces something new: API logs full of `duplicate key value violates
+unique constraint`, and redeliveries answered with **HTTP 500**.
 
-Perhatikan apa yang terjadi di database waktu itu: barisnya tetap satu, dan saldonya tetap
-benar. Jadi dobel-nya sudah beres — yang tersisa cuma ini: gateway menerima error, dan
-karena dia memang tidak pernah tahu jawabannya sampai, dia akan mengirim ulang. Lagi, dan
-lagi, sampai endpoint ini dianggap mati di sisi mereka. Log-mu penuh, dan tidak ada satu pun
-baris di dalamnya yang berarti "kami sudah pernah menerima ini".
+Notice what happened in the database then: still one row, balance still correct. So the duplicates
+are solved — what remains is this: the gateway receives an error, and since it never knew the answer
+arrived, it will redeliver. Again, and again, until the endpoint is considered dead on their side.
+Your logs are full, and not one line in them means "we already received this".
 
-Tiga pertanyaan, dan jawab ketiganya sebelum menulis kode:
+Three questions, and answer all three before writing code:
 
-**(a) Kalau satu statement di dalam transaksi gagal, apa yang terjadi pada transaksi itu
-dan pada statement berikutnya?** Jangan dijawab dari ingatan. Buktikan di `make psql`:
+**(a) If one statement inside a transaction fails, what happens to that transaction and to the next
+statement?** Do not answer from memory. Prove it in `make psql`:
 
 ```sql
 BEGIN;
 INSERT INTO ledger_entries (account_id, event_id, delivery_id, amount)
-    VALUES (1, 'evt_seed_01', 'dlv_coba_1', 1);   -- event_id ini sudah ada
+    VALUES (1, 'evt_seed_01', 'dlv_coba_1', 1);   -- this event_id already exists
 SELECT 1;
 ROLLBACK;
 ```
 
-Lihat error kedua. Kode errornya `25P02`, dan itu nama yang perlu kamu tahu.
+Look at the second error. The code is `25P02`, and that name is worth knowing.
 
-**(b) Tadi kita menganggap "event ini sudah ada" sebagai kegagalan. Dari mana?** Gateway itu
-mengirim ulang karena dia **tidak mendapat jawaban** — dia memang tidak tahu percobaan
-pertamanya berhasil atau tidak. Jadi apa jawaban yang benar untuk percobaan kedua?
+**(b) We just treated "this event already exists" as a failure. Why?** The gateway redelivers because
+it **got no answer** — it genuinely does not know whether its first attempt worked. So what is the
+correct answer for the second attempt?
 
-**(c) Kalau percobaan kedua harus dijawab persis seperti percobaan pertama, di mana kamu
-menyimpan jawaban pertama itu?** Lihat lagi apa yang dituntut pemeriksaan C di
-`make check`.
-
----
-
-## Hint 3 — empat keputusan, dan di mana masing-masing diambil
-
-Semuanya satu tema: **hal yang harus terjadi tepat sekali harus diputuskan oleh database,
-di dalam transaksi yang sama dengan pekerjaannya.**
-
-**1. Klaim eventnya, jangan memeriksa dulu lalu menulis.** `SELECT` dulu, baru `INSERT`,
-selalu bisa kalah balapan — dan itu bukan teori, lihat `make check` D dan G. Satu statement
-`INSERT ... ON CONFLICT DO NOTHING ... RETURNING` bisa mengerjakan "periksa dan tulis" sebagai
-satu operasi yang tidak bisa disela. `RETURNING` yang kosong berarti kamu kalah balapan, dan
-itu jawaban yang sama sahnya dengan menang.
-
-**2. Konflik bukan error.** Percabangan "sudah pernah diproses" harus jalan normal, bukan
-lewat `except`, dan jawabannya adalah jawaban percobaan pertama yang kamu simpan.
-
-**3. Klaim dan pekerjaannya satu transaksi, dan commit-nya cuma sekali.** Kalau kamu menyimpan
-klaimnya lebih dulu lalu commit, ada jeda di mana server boleh mati: eventnya tercatat sudah
-diproses, tapi baris ledger dan saldonya tidak pernah ada — dan semua pengiriman ulang
-sesudahnya akan dianggap duplikat. Dobel bisa kamu lihat. Hilang tidak.
-
-**4. Saldo bukan soal idempotensi, tapi ketemu di lab yang sama.** Kenapa `make check` G2
-merah padahal cuma 20 baris ledger yang masuk, dan kenapa `account.balance = account.balance +
-nominal` di Python bukan operasi yang sama dengan `SET balance = balance + nominal` di SQL?
+**(c) If the second attempt must be answered exactly like the first, where do you keep that first
+answer?** Look again at what check group C in `make check` demands.
 
 ---
 
-## Jebakan yang harus kamu hindari
+## Hint 3 — four decisions, and where each one is made
 
-Setelah unique key terpasang, jalan tercepat untuk membuat error di log hilang adalah:
+All one theme: **something that must happen exactly once has to be decided by the database, inside the
+same transaction as the work.**
+
+**1. Claim the event, do not check-then-write.** `SELECT` first, then `INSERT`, can always lose a race
+— and that is not theory, see checks D and G. One statement
+`INSERT ... ON CONFLICT DO NOTHING ... RETURNING` can do "check and write" as one operation nothing
+can interrupt. An empty `RETURNING` means you lost the race, and that answer is as valid as winning.
+
+**2. A conflict is not an error.** The "already processed" branch must run normally, not through an
+`except`, and the answer is the first attempt's answer that you stored.
+
+**3. The claim and the work are one transaction, committed once.** If you store the claim first and
+commit, there is a gap where the server may die: the event is recorded as processed while the ledger
+row and balance never existed — and every redelivery after that is treated as a duplicate. Duplicates
+you can see. Loss you cannot.
+
+**4. The balance is not an idempotency problem, but it lives in the same lab.** Why is check G2 red
+when only 20 ledger rows went in, and why is `account.balance = account.balance + amount` in Python
+not the same operation as `SET balance = balance + amount` in SQL?
+
+---
+
+## The trap to avoid
+
+After the unique key is in place, the fastest way to make the log errors disappear is:
 
 ```python
 try:
@@ -98,18 +94,15 @@ except IntegrityError:
     pass
 ```
 
-Ini terasa benar, karena hasilnya memang "tidak ada baris ganda". Dua hal yang terjadi
-sesudahnya:
+It feels right, because the result is indeed "no duplicate row". Two things happen next:
 
-**Transaksinya sudah mati.** Di Postgres, statement yang gagal membatalkan seluruh transaksi.
-Statement apa pun setelah `IntegrityError` yang tidak ditangani akan gagal dengan `25P02`
-("current transaction is aborted"). Kalau kamu menelan error itu dan lanjut, sisa pekerjaanmu
-di request itu **tidak jalan** — dan kalau kamu mengembalikan HTTP 200, kamu baru saja bilang
-"beres" untuk pekerjaan yang tidak terjadi.
+**The transaction is already dead.** In Postgres a failed statement aborts the whole transaction. Any
+statement after an unhandled `IntegrityError` fails with `25P02` ("current transaction is aborted"). If
+you swallow that error and continue, the rest of the work in that request **does not run** — and if
+you return HTTP 200, you just said "done" for work that never happened.
 
-**Kalau kamu menanganinya, kamu perlu `SAVEPOINT`** supaya rollback-nya terbatas sampai
-statement itu saja.
+**If you do want to handle it, you need a `SAVEPOINT`** so the rollback is limited to that one
+statement.
 
-Karena itu hint 3 mengarahkan kamu ke `ON CONFLICT DO NOTHING`: bukan sebagai trik supaya
-error-nya hilang, tapi supaya tidak pernah ada error yang perlu ditangani. Konflik yang bisa
-diprediksi bukan pengecualian.
+Which is why hint 3 points you at `ON CONFLICT DO NOTHING`: not as a trick to silence the error, but so
+that there is never an error to handle. A predictable conflict is not an exception.

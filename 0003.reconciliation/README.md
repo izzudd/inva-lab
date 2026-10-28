@@ -1,92 +1,90 @@
-# Lab 3 — Satu pembayaran, tiga jalur
+# Lab 3 — One payment, three paths
 
-Bagian dari repo [`inva-lab`](../README.md). Semua perintah di bawah ini dijalankan dari
-direktori `0003.reconciliation/`.
+Part of the [`inva-lab`](../README.md) repo. Every command below is run from the
+`0003.reconciliation/` directory.
 
 ```bash
-make up      # nyalain db + API + gateway (tiruan)
-make demo    # cerita lengkapnya: webhook malam itu, job paginya, webhook yang telat
-make check   # target lab ini
+make up      # start the db + API + gateway (fake)
+make demo    # the whole story: that night's webhooks, the morning job, the late webhook
+make check   # this lab's target
 ```
 
-Sistemnya sudah lewat lab sebelumnya: jalur webhook-nya sudah idempotent. Yang baru adalah
-**jalur kedua**. Kalau ada pembayaran yang webhook-nya tidak pernah sampai — gateway-nya down,
-kita yang down, atau koneksinya putus di tengah — ada job pagi yang membaca **laporan
-settlement** dari gateway dan menutup yang belum tercatat.
+The system has already been through the previous lab: the webhook path is idempotent. What is new is
+**the second path**. If a payment's webhook never arrived — the gateway was down, we were down, or the
+connection dropped mid-flight — a morning job reads the gateway's **settlement report** and closes
+whatever is missing.
 
-Dua jalur untuk satu fakta yang sama. Dan tidak ada satu pun dari jalur itu yang tahu bahwa
-jalur satunya ada.
+Two paths for the same fact. And neither path knows the other exists.
 
-Ini yang terjadi di lab ini (angka dari `make demo`, satu hari di mana gateway sempat down):
+This is what happens in this lab (numbers from `make demo`, one day when the gateway was down):
 
-| | sekarang |
+| | now |
 |---|---|
-| 3 webhook malam itu, lalu job rekonsiliasi paginya | 6 pembayaran jadi **9 baris** — 3 di antaranya punya dua baris, satu dari tiap jalur |
-| webhook yang telat akhirnya sampai | 6 pembayaran jadi **12 baris** — semuanya dobel, saldo 665.000 dari 220.000 yang seharusnya |
-| job rekonsiliasi dijalankan dua kali | **6 baris baru** tiap kali dijalankan, dan job-nya melaporkan `inserted=6` (bukan 0) |
-| dua run job jalan bersamaan | **12 baris** untuk 6 pembayaran, saldo naik 420.000 dari 210.000 |
-| laporan settlement beda nominal dengan yang sudah tercatat | **2 baris** untuk 1 pembayaran, dan `mismatched` tetap kosong |
+| 3 webhooks that night, then the morning reconciliation job | 6 payments become **9 rows** — 3 of them hold two rows, one per path |
+| the late webhook finally arrives | 6 payments become **12 rows** — all doubled, balance 665,000 against the 220,000 it should be |
+| the reconciliation job run twice | **6 new rows** each run, and the job reports `inserted=6` (not 0) |
+| two job runs at the same time | **12 rows** for 6 payments, balance up 420,000 against 210,000 |
+| a settlement row whose amount differs from what is recorded | **2 rows** for 1 payment, and `mismatched` stays empty |
 
-## Misi kamu
+## Your mission
 
-Bikin `make check` hijau. Tiga syarat:
+Make `make check` green. Three conditions:
 
-1. **Satu pembayaran, satu baris.** Dari jalur mana pun, dan berapa kali pun jalurnya
-   dipanggil. Enam pembayaran di laporan = enam baris ledger, bukan sembilan, bukan dua belas.
-2. **Job boleh dijalankan lagi, dan laporannya jujur.** Run kedua untuk hari yang sama tidak
-   menambah baris dan melaporkan `inserted=0`. Run yang cuma sanggup memproses sebagian
-   (`limit=2`) boleh dilanjutkan kapan saja tanpa mendobel. Dua run yang tumpang tindih juga
-   tidak boleh mendobel.
-3. **Nominal yang sudah tercatat tidak berubah diam-diam.** Kalau laporan settlement menyebut
-   nominal yang berbeda dengan yang sudah ada di ledger, barisnya tetap satu, nominalnya tetap
-   yang pertama, dan perbedaannya **dilaporkan** di ringkasan job (`mismatched`).
+1. **One payment, one row.** From any path, and no matter how many times a path is called. Six payments
+   in the report = six ledger rows, not nine, not twelve.
+2. **The job can run again, and its report is honest.** A second run for the same day adds no rows and
+   reports `inserted=0`. A run that only managed part of the work (`limit=2`) can be continued
+   whenever, without doubling. Two overlapping runs must not double either.
+3. **An amount already recorded does not change quietly.** If the settlement report states an amount
+   different from what is already in the ledger, the row stays one, the amount stays the first one, and
+   the difference is **reported** in the job summary (`mismatched`).
 
-Boleh mengubah apa saja, kecuali:
+You may change anything except:
 
-- kontrak `GET /api/accounts/:id`, `GET /api/accounts/:id/entries`, `POST /jobs/reconcile`
-  (balasannya dipakai `make check`), dan gateway tiruannya (`gateway/`)
-- isi `db/init/02_seed.sql`
+- the contract of `GET /api/accounts/:id`, `GET /api/accounts/:id/entries`, `POST /jobs/reconcile`
+  (their responses are read by `make check`), and the fake gateway (`gateway/`)
+- the contents of `db/init/02_seed.sql`
 
-## Di mana mulainya
+## Where to start
 
 ```bash
-make demo        # jalankan ini dulu: ceritanya, bukan angkanya
-make settlement  # laporan settlement yang dibaca job
-make entries     # baris ledger akun 1 (di dalamnya ada kolom `source`)
-make jobs        # riwayat run rekonsiliasi
-make psql        # masuk ke database
+make demo        # run this first: the story, not the numbers
+make settlement  # the settlement report the job reads
+make entries     # ledger rows for account 1 (there is a `source` column)
+make jobs        # reconciliation run history
+make psql        # into the database
 ```
 
-Gateway-nya tiruan dan laporannya dibangkitkan dari tanggalnya, jadi tanggal yang sama selalu
-menghasilkan pembayaran yang sama. Kamu bisa pakai tanggal apa pun: `make demo DAY=2024-03-17`.
+The gateway is fake and its reports are generated from the date, so the same date always produces the
+same payments. Any date works: `make demo DAY=2024-03-17`.
 
-## Sebelum buka jawabannya
+## Before you open the answer
 
-Kalau macet, buka `HINTS.md` sesuai urutan. Jangan lompat ke hint 3.
+If you get stuck, open `HINTS.md` in order. Do not jump to hint 3.
 
-- nyangkut 45 menit → hint 1
-- nyangkut 90 menit → hint 2
-- menyerah → hint 3, dan **tulis di mana kamu nyerah**
+- stuck 45 minutes → hint 1
+- stuck 90 minutes → hint 2
+- giving up → hint 3, and **write down where you gave up**
 
-Jangan buka branch `solusi` sebelum kamu benar-benar mentok.
+Do not open the `solusi` branch before you are genuinely stuck.
 
-## Kenapa ini ada
+## Why this exists
 
-Di lab sebelumnya, "pembayaran" dan "pesan yang memberitahukan pembayaran itu" kebetulan
-selalu datang berpasangan, jadi tidak pernah ada bedanya. Begitu ada jalur kedua, bedanya jadi
-yang paling penting di seluruh sistem: **kunci yang benar bukan kunci yang unik, tapi kunci
-yang dimiliki oleh faktanya, bukan oleh pesannya.**
+In the previous lab, "the payment" and "the message announcing that payment" happened to always arrive
+as a pair, so the difference never mattered. As soon as a second path exists, that difference becomes
+the most important thing in the system: **the right key is not the unique key, it is the key owned by
+the fact, not by the message.**
 
-Dan bagian kedua yang lebih halus: dua jalur yang sama-sama benar bisa butuh **kebijakan yang
-berbeda** waktu menemukan keanehan. Webhook boleh membalas 409 untuk satu event yang aneh;
-job rekonsiliasi tidak boleh mati cuma karena satu baris laporan tidak cocok.
+And the subtler second half: two paths that are each correct can need **different policies** when they
+find something odd. A webhook may answer 409 for one weird event; a reconciliation job must not die
+because one report line does not match.
 
-## Batas lab ini
+## The limits of this lab
 
-- **Satu charge = satu fakta.** Di sini satu pembayaran cuma punya satu kemungkinan isi. Begitu
-  ada event kedua tentang charge yang sama yang memang fakta baru — refund, chargeback,
-  pembayaran sebagian — kunci `charge_id` sendirian tidak cukup lagi: kamu butuh kunci per
-  (charge, jenis fakta), dan aturan tentang urutan kejadiannya.
-- **Siapa yang menang itu keputusan bisnis.** Di lab ini aturannya "yang tercatat dulu yang
-  menang, selisihnya dilaporkan". Ada sistem yang memilih sebaliknya (settlement terakhir yang
-  menang, dengan baris penyesuaian). Yang tidak boleh: memilih tanpa sadar.
+- **One charge = one fact.** Here a payment has only one possible content. As soon as there is a second
+  event about the same charge that is genuinely new — a refund, a chargeback, a partial payment —
+  `charge_id` alone is no longer enough: you need a key per (charge, kind of fact), plus a rule about
+  the order of events.
+- **Who wins is a business decision.** Here the rule is "whatever was recorded first wins, and the
+  difference is reported". Some systems choose the opposite (last settlement wins, with an adjustment
+  row). What is not allowed is choosing without realising it.

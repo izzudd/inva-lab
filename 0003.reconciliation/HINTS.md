@@ -1,86 +1,80 @@
 # Hints
 
-Buka satu per satu. Tiap hint cuma kasih pertanyaan berikutnya, bukan jawabannya.
+Open them one at a time. Each hint only gives you the next question, not the answer.
 
 ---
 
-## Hint 1 — dua baris untuk satu pembayaran, dan dua-duanya merasa benar
+## Hint 1 — two rows for one payment, and both feel correct
 
-Jalankan `make demo`. Perhatikan kolom `source` di setiap baris: satu baris datang dari
-`webhook`, satu lagi dari `recon`. Pembayarannya sama — `charge_id`-nya sama — tapi yang
-membedakannya di kedua jalur itu bukan pembayarannya.
+Run `make demo`. Look at the `source` column on each row: one row came from `webhook`, the other from
+`recon`. The payment is the same — the `charge_id` is the same — but what distinguishes them on the two
+paths is not the payment.
 
-Tiga pertanyaan:
+Three questions:
 
-1. Jalur webhook memakai kunci apa untuk memutuskan "ini sudah pernah aku catat"? Jalur
-   rekonsiliasi memakai kunci apa? Buka `api/app/ledger.py` dan bandingkan dua fungsi di
-   dalamnya.
-2. Dari dua kunci itu, yang mana yang berasal dari **pembayarannya**, dan yang mana yang
-   berasal dari **pesan yang memberitahukannya**?
-3. Kunci yang berasal dari pesan itu sifatnya apa kalau ada jalur kedua? Dan kenapa jalur
-   rekonsiliasi harus membuat kuncinya sendiri, bukan memakai kunci dari jalur webhook?
-
----
-
-## Hint 2 — job-nya sendiri juga belum aman dijalankan lagi
-
-Jalankan `make check`, lalu lihat pemeriksaan C. Job dijalankan lagi untuk hari yang sama, dan
-dia melaporkan `inserted=6` — bukan `0`.
-
-Pertanyaan:
-
-1. Lihat kunci klaim yang dibuat `record_from_settlement` di `ledger.py`. Bagian mana dari kunci
-   itu yang berubah tiap kali job dijalankan? Dan kenapa penulisnya menaruh bagian itu di sana
-   (petunjuk: lihat komentarnya, dan lihat baris mana di `ledger_entries` yang diisi dari situ)?
-2. Kalau kuncinya tidak lagi memuat id run, apa lagi yang dibutuhkan job ini supaya dua run
-   yang tumpang tindih tidak saling menimpa? *(Jawaban "tidak ada" itu sah — coba buktikan
-   kenapa.)*
-3. Lihat `mismatched` di ringkasan job: selalu `[]`, padahal pemeriksaan F menyiapkan laporan
-   yang nominalnya beda. Informasi itu ada di mana? Siapa yang seharusnya membandingkan?
+1. Which key does the webhook path use to decide "I already recorded this"? Which key does the
+   reconciliation path use? Open `api/app/ledger.py` and compare the two functions in it.
+2. Of those two keys, which one comes from **the payment**, and which comes from **the message
+   announcing it**?
+3. What happens to a key that comes from the message once a second path exists? And why must the
+   reconciliation path mint its own key instead of reusing the webhook path's?
 
 ---
 
-## Hint 3 — empat keputusan
+## Hint 2 — the job itself is not safe to rerun either
 
-Semuanya satu tema: **kunci yang benar adalah kunci milik faktanya, dan kebijakan waktu
-menemukan keanehan berbeda per jalur.**
+Run `make check`, then look at check C. The job is run again for the same day, and it reports
+`inserted=6` — not `0`.
 
-**1. Klaimnya jadi klaim tentang pembayaran, bukan tentang pesan.** Ganti tabel `processed_events`
-menjadi klaim ber-`charge_id` sebagai primary key: `payment_claims(charge_id, ...)`. Kunci ini
-sama untuk jalur webhook dan jalur rekonsiliasi, karena keduanya sedang membicarakan pembayaran
-yang sama. `event_id` tetap disimpan, tapi sebagai jejak pesan pertama yang memberitahukannya —
-bukan sebagai penentu.
+Questions:
 
-**2. Unique di ledger-nya ikut pindah.** `ledger_entries.event_id` yang unik tidak lagi berarti
-apa-apa begitu kuncinya pindah; yang harus unik adalah `charge_id`. Di database produksi, ini
-migrasi yang harus dikerjakan hati-hati: duplikat yang sudah ada harus dibereskan dulu.
-
-**3. Dua jalur, dua kebijakan waktu klaimnya sudah ada.**
-- **Webhook** (lab sebelumnya): balas dengan jawaban pengiriman pertama yang tersimpan. Yang
-  isinya beda → 409, karena pengirimnya masih menunggu jawaban.
-- **Job rekonsiliasi**: jangan pernah menggagalkan seluruh run cuma karena satu baris. Yang
-  sudah ada dan cocok → lewati diam-diam. Yang sudah ada tapi nominalnya beda → **laporkan** di
-  `mismatched` (misalnya daftar `charge_id`-nya), jangan ditimpa, jangan ditambah baris.
-  Job yang satu baris jeleknya bikin seluruh hari gagal itu job yang tidak akan pernah selesai.
-
-**4. Setelah dua itu beres, run yang tumpang tindih dan run yang kepotong selesai sendiri.**
-Tidak perlu kursor, tidak perlu tabel progres, tidak perlu id run di kunci: menjalankan ulang
-satu hari penuh aman, karena tiap pembayarannya mengklaim dirinya sendiri. Itu sebabnya
-pemeriksaan E dan G hijau tanpa kamu menulis satu baris pun untuk mereka.
+1. Look at the claim key that `record_from_settlement` builds in `ledger.py`. Which part of that key
+   changes on every run? And why did the author put that part in there (hint: read the comment, and see
+   which rows in `ledger_entries` are filled from it)?
+2. If the key no longer carries the run id, what else does this job need so two overlapping runs do not
+   overwrite each other? *(The answer "nothing" is valid — try to prove why.)*
+3. Look at `mismatched` in the job summary: always `[]`, even though check F prepares a report with a
+   different amount. Where does that information live? Who is supposed to compare it?
 
 ---
 
-## Jebakan yang harus kamu hindari
+## Hint 3 — four decisions
 
-**Memberi jalur kedua tabelnya sendiri.** Ini yang paling menggoda: biarkan klaim webhook apa
-adanya, dan bikin tabel klaim untuk job. Hasilnya sama seperti sekarang — dua jalur, dua tabel,
-dua kebenaran. Yang harus disatukan adalah **kuncinya**, bukan alatnya.
+All one theme: **the right key is the key owned by the fact, and the policy for handling oddities
+differs per path.**
 
-**Mempercayai laporan settlement sebagai kebenaran.** Laporan itu juga cuma klaim: nominalnya
-bisa beda dengan yang sudah kita catat, dan baris bisa muncul dua kali kalau gateway mengirim
-ulang laporannya. Job yang menulis apa pun yang dilihatnya akan menulis tiga kali untuk satu
-pembayaran pada hari ketiga.
+**1. The claim becomes a claim about the payment, not the message.** Replace the `processed_events`
+table with a claim keyed by `charge_id`: `payment_claims(charge_id, ...)`. That key is identical for the
+webhook path and the reconciliation path, because both are talking about the same payment. `event_id` is
+still stored, but as a trace of the first message that announced it — not as the arbiter.
 
-**Membalas error supaya job-nya "berhenti dan kelihatan".** Job yang mati di baris pertama
-laporan yang jelek akan berhenti di situ selamanya. Baris yang tidak cocok dilaporkan, bukan
-dijadikan alasan untuk berhenti.
+**2. The unique constraint in the ledger moves too.** A unique `ledger_entries.event_id` means nothing
+once the key moves; what must be unique is `charge_id`. On a production database this is a migration to
+do carefully: existing duplicates have to be cleaned up first.
+
+**3. Two paths, two policies when the claim already exists.**
+- **Webhook** (previous lab): answer with the stored first response. Different content → 409, because
+  the sender is still waiting for an answer.
+- **Reconciliation job**: never fail the whole run because of one line. Already there and matching →
+  skip silently. Already there but a different amount → **report** it in `mismatched` (say, the list of
+  `charge_id`s), do not overwrite, do not add a row. A job where one bad line fails the whole day is a
+  job that never completes.
+
+**4. Once those two are done, overlapping and interrupted runs finish on their own.** No cursor, no
+progress table, no run id in the key: replaying a whole day is safe, because every payment claims
+itself. That is why checks E and G go green without you writing a line for them.
+
+---
+
+## The traps to avoid
+
+**Giving the second path its own table.** This is the most tempting one: leave the webhook claim as it
+is, and build a claims table for the job. The result is what you have now — two paths, two tables, two
+truths. What has to be unified is **the key**, not the tool.
+
+**Trusting the settlement report as the truth.** The report is also just a claim: its amount can differ
+from what we already recorded, and lines can appear twice if the gateway resends its report. A job that
+writes whatever it sees will write three times for one payment on the third day.
+
+**Answering with an error so the job "stops and is visible".** A job that dies on the first bad report
+line stops there forever. A line that does not match gets reported, not turned into a reason to stop.

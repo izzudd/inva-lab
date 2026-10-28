@@ -1,85 +1,78 @@
 # Hints
 
-Buka satu per satu. Tiap hint cuma kasih pertanyaan berikutnya, bukan jawabannya.
+Open them one at a time. Each hint only gives you the next question, not the answer.
 
 ---
 
-## Hint 1 — script-nya mati di baris pertama yang jelek
+## Hint 1 — the script dies on the first bad line
 
-Jalankan `make demo`. Lihat dua file yang bermasalah: yang satu berhenti dengan `ValueError`,
-yang satu dengan `IndexError`. Dan `data/contoh/kosong.csv` malah tidak bilang apa-apa.
+Run `make demo`. Look at the two broken files: one stops with `ValueError`, the other with `IndexError`.
+And `data/contoh/kosong.csv` says nothing at all.
 
-Tiga pertanyaan:
+Three questions:
 
-1. Buka `app/impor.py`. Baris `umur = int(baris[2])` itu apa yang terjadi kalau isinya bukan
-   angka? Siapa yang menangkapnya? Kalau tidak ada yang menangkap, apa yang membuat seluruh
-   program berhenti — dan berapa masalah yang **tidak** keburu dilaporkan?
-2. Perhatikan komentar di fungsi `periksa` dan di dalam perulangan. Dua-duanya menjelaskan
-   keputusan yang disengaja. Apakah alasan di komentarnya masih benar, kalau yang kamu
-   inginkan adalah melaporkan semua baris jelek, bukan berhenti?
-3. Sekarang `data/contoh/kosong.csv`: kenapa `make impor` bilang `3 baris diimpor` dengan
-   tenang sementara ada baris tanpa nama? Kolom mana yang diperiksa, dan kolom mana yang
-   dilewati?
+1. Open `app/impor.py`. What happens at `umur = int(baris[2])` when the contents are not a number? Who
+   catches it? If nobody does, what makes the whole program stop — and how many problems never get
+   reported because of it?
+2. Read the comments inside `periksa` and inside the loop. Both explain a deliberate decision. Are those
+   reasons still true if what you want is to report every bad row instead of stopping?
+3. Now `data/contoh/kosong.csv`: why does `make impor` calmly say `3 baris diimpor` while there is a row
+   with no name? Which column gets checked, and which one gets skipped?
 
-Yang perlu kamu ubah dulu cuma satu: **satu baris jelek tidak boleh menghentikan seluruh
-proses**, dan **setiap masalah harus jadi satu baris laporan**, bukan traceback.
+Only one thing has to change first: **one bad row must not stop the whole run**, and **every problem has
+to become one report line**, not a traceback.
 
 ---
 
-## Hint 2 — "di mana" yang benar, dan kode keluar
+## Hint 2 — the right "where", and the exit code
 
-Kalau semua masalah sudah dilaporkan, dua jebakan berikutnya yang paling sering kena:
+Once every problem is reported, the next two traps are the ones people hit most:
 
-1. **Nomor barisnya.** Kalau kamu menghitung dari baris data (`enumerate(data, start=1)`), angka
-   itu **bukan** nomor baris di file. Baris 1 di file adalah judulnya. Coba `data/contoh/
-   beberapa.csv` di editor: masalah pertama ada di baris berapa? Bandingkan dengan yang
-   dilaporkan programmu. Kalau beda satu, kamu sedang menghitung index data, bukan baris file.
-2. **`IndexError` di `data/contoh/kolom.csv`.** Baris yang jumlah kolomnya kurang atau lebih
-   tidak bisa diperiksa isinya per kolom — sebelum menyentuh `baris[2]`, pastikan dulu jumlah
-   kolomnya memang benar.
-3. **Kode keluar.** Sekarang `FileNotFoundError` juga bikin kode keluar `1`, sama seperti file
-   yang berisi data jelek. Dari sisi pemanggil, "file-nya tidak ketemu" dan "file-nya ketemu
-   tapi isinya ada yang salah" itu dua hal yang sangat berbeda. Mana yang `0`, mana yang `1`,
-   mana yang `2`?
+1. **The line number.** If you count from the data rows (`enumerate(data, start=1)`), that number is
+   **not** the line number in the file. Line 1 of the file is the header. Open
+   `data/contoh/beberapa.csv` in an editor: which line is the first problem on? Compare with what your
+   program reports. Off by one means you are counting data indices, not file lines.
+2. **`IndexError` in `data/contoh/kolom.csv`.** A row with too few or too many columns cannot be checked
+   column by column — before touching `baris[2]`, confirm the column count is actually right.
+3. **The exit code.** Right now `FileNotFoundError` also produces exit code `1`, the same as a file full
+   of bad data. To a caller, "the file is not there" and "the file is there but something in it is wrong"
+   are very different things. Which is `0`, which is `1`, which is `2`?
 
 ---
 
-## Hint 3 — bentuk akhirnya
+## Hint 3 — the final shape
 
-Semuanya satu tema: **satu masalah = satu baris, dengan tiga bagian** (di mana, apa, harusnya
-apa), dan **program tidak berhenti walau ada baris jelek**.
+All one theme: **one problem = one line, with three parts** (where, what, what it should be), and **the
+program does not stop even when a row is bad**.
 
-**1. Validasi jadi fungsi yang mengumpulkan, bukan yang melempar.** Buat `periksa(baris)`
-mengembalikan **daftar** masalah, bukan mencetak atau `raise`. Baris yang benar mengembalikan
-daftar kosong. Satu baris boleh punya lebih dari satu masalah (lihat baris 3 di
-`beberapa.csv`: nama kosong **dan** email tanpa `@`).
+**1. Validation becomes a function that collects instead of throwing.** Make `periksa(baris)` return a
+**list** of problems, not print or `raise`. A correct row returns an empty list. One row may hold more
+than one problem (see line 3 of `beberapa.csv`: empty name **and** an email with no `@`).
 
-**2. Periksa jumlah kolom lebih dulu.** Kalau `len(baris) != len(KOLOM)`, itu satu masalah di
-kolom `jumlah kolom` — dan berhenti di baris itu saja, karena kolom per kolom belum bisa
-dipercaya. Untuk masalah lain, `umur` beda dari yang lain: `int(umur)` bisa melempar
-`ValueError`, jadi bungkus dengan `try/except` dan jadikan pesannya, misalnya `'"dua puluh"
-bukan angka — isi dengan bilangan bulat, misalnya 25`.
+**2. Check the column count first.** If `len(baris) != len(KOLOM)`, that is one problem in the
+`jumlah kolom` column — and stop with that row only, because the columns cannot be trusted individually.
+For other problems, `umur` is different: `int(umur)` can throw `ValueError`, so wrap it in `try/except`
+and turn it into a message like `'"dua puluh" bukan angka — isi dengan bilangan bulat, misalnya 25'`.
 
-**3. Nomor barisnya dari `enumerate(pembaca, start=2)`.** Mulai dari 2, karena baris 1 file
-adalah judul. Ini yang bikin pemeriksaan D hijau.
+**3. Take the line number from `enumerate(pembaca, start=2)`.** Start at 2, because line 1 of the file is
+the header. That is what makes check D green.
 
-**4. Tulis laporannya ke `stderr` dengan format yang tetap**
-(`baris {nomor}: {kolom} — {pesan}`), lalu `return 1` kalau ada masalah, `0` kalau tidak.
-Untuk file yang tidak ada atau argumen yang kurang, tulis satu baris penjelasan lalu `return 2`
-— jangan biarkan traceback yang muncul.
+**4. Write the report to `stderr` in a fixed format** (`baris {nomor}: {kolom} — {pesan}`), then
+`return 1` if there were problems, `0` if not. For a missing file or missing argument, write one line of
+explanation then `return 2` — do not let a traceback appear.
 
 ---
 
-## Jebakan yang harus kamu hindari
+## The traps to avoid
 
-**Membungkus semuanya dengan satu `try/except` besar di `main`.** Itu memang menghilangkan
-traceback, tapi juga menghentikan program di baris jelek pertama — pemeriksaan C tetap merah.
-Yang benar: `try/except` kecil dan spesifik di tempat yang memang bisa gagal (`int(umur)`,
-`open(path)`), sisanya jalan terus.
+**Wrapping everything in one big `try/except` in `main`.** That does remove the traceback, but it also
+stops the program at the first bad line — check C stays red. What is correct: small, specific
+`try/except` where failure is genuinely possible (`int(umur)`, `open(path)`), and let the rest keep
+running.
 
-**Menyalin pesan Python apa adanya.** `invalid literal for int() with base 10` benar secara
-teknis dan tidak berguna bagi pengguna. Yang dicari pengguna: baris berapa, kolom apa, nilainya
-apa, dan harus diisi bagaimana.
+**Copying Python's message verbatim.** `invalid literal for int() with base 10` is technically accurate
+and useless to the user. What the user needs: which line, which column, what the value is, and how it
+should be filled.
 
-**Lupa bahwa satu baris bisa punya dua masalah.** Kalau `periksa` mengembalikan setelah masalah
-pertama, baris 3 di `beberapa.csv` cuma menghasilkan satu laporan, dan pemeriksaan C merah.
+**Forgetting that one row can hold two problems.** If `periksa` returns after the first problem, line 3
+of `beberapa.csv` yields only one report, and check C goes red.
