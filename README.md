@@ -83,3 +83,9 @@ prints) is still Indonesian — `LULUS` means PASS, `GAGAL` means FAIL.
 ## License
 
 MIT — use it, change it, spread it.
+
+## Lisensi
+
+© 2026 Daffa Izzuddin. Karya ini dilisensikan di bawah [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/).
+
+Boleh dipakai, diubah, dan dibagikan untuk keperluan **non-komersial** dengan mencantumkan atribusi. Penggunaan komersial tidak diizinkan. Teks lisensi lengkap ada di [LICENSE](LICENSE).
