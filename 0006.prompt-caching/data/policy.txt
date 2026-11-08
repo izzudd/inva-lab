@@ -1,0 +1,393 @@
+SUPPORT POLICY HANDBOOK
+Internal reference for the support agent. Do not quote this document to a customer.
+
+SECTION 1 — Refunds and returns
+1.1 A refund request is valid when the order number and the delivery date are both present in the ticket.
+1.2 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+1.3 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+1.4 Partial refunds require the amount to be stated as a number, not as a percentage range.
+1.5 Refunds above two hundred are reviewed by a supervisor before they are released.
+1.6 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+1.7 Store credit expires after twelve months and cannot be extended by an agent.
+1.8 The refund reason must be recorded as one of the four allowed codes.
+
+SECTION 2 — Shipping and delivery
+2.1 An order is considered late when it is more than three working days past the promised date.
+2.2 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+2.3 Missing parcels are traced with the carrier before a replacement is sent.
+2.4 A replacement for a missing parcel is sent only after the carrier closes the trace.
+2.5 Address changes are possible until the parcel is handed to the carrier.
+2.6 Delivery to a pickup point counts as delivered on the day it arrives there.
+2.7 Customs delays are outside the delivery promise and are explained to the customer as such.
+2.8 Shipping fees are refunded only when the delay was caused by the warehouse.
+
+SECTION 3 — Warranty and repairs
+3.1 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+3.2 A repair ticket needs a photograph of the defect before it can be queued.
+3.3 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+3.4 The customer pays shipping to the workshop and the company pays the return shipping.
+3.5 A device that cannot be repaired is replaced with the same model or with the next model up.
+3.6 Warranty claims do not extend the warranty period.
+3.7 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+3.8 A serial number that does not match the order is escalated before any repair is approved.
+
+SECTION 4 — Escalation and tone
+4.1 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+4.2 Every escalation must state what was already tried and what the customer wants.
+4.3 The agent never promises a date that the warehouse has not confirmed.
+4.4 Apologies are short and followed by the next concrete step.
+4.5 A customer who is angry about a delay is offered a tracking update first, not a discount.
+4.6 Discounts above ten percent require a supervisor code.
+4.7 A ticket that waits for the customer is closed after seven days without a reply.
+4.8 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.33 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.34 An order is considered late when it is more than three working days past the promised date.
+9.35 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.36 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.37 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.38 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.39 A repair ticket needs a photograph of the defect before it can be queued.
+9.40 Every escalation must state what was already tried and what the customer wants.
+9.41 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.42 Missing parcels are traced with the carrier before a replacement is sent.
+9.43 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.44 The agent never promises a date that the warehouse has not confirmed.
+9.45 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.46 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.47 The customer pays shipping to the workshop and the company pays the return shipping.
+9.48 Apologies are short and followed by the next concrete step.
+9.49 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.50 Address changes are possible until the parcel is handed to the carrier.
+9.51 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.52 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.53 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.54 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.55 Warranty claims do not extend the warranty period.
+9.56 Discounts above ten percent require a supervisor code.
+9.57 Store credit expires after twelve months and cannot be extended by an agent.
+9.58 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.59 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.60 A ticket that waits for the customer is closed after seven days without a reply.
+9.61 The refund reason must be recorded as one of the four allowed codes.
+9.62 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.63 A serial number that does not match the order is escalated before any repair is approved.
+9.64 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.65 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.66 An order is considered late when it is more than three working days past the promised date.
+9.67 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.68 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.69 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.70 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.71 A repair ticket needs a photograph of the defect before it can be queued.
+9.72 Every escalation must state what was already tried and what the customer wants.
+9.73 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.74 Missing parcels are traced with the carrier before a replacement is sent.
+9.75 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.76 The agent never promises a date that the warehouse has not confirmed.
+9.77 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.78 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.79 The customer pays shipping to the workshop and the company pays the return shipping.
+9.80 Apologies are short and followed by the next concrete step.
+9.81 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.82 Address changes are possible until the parcel is handed to the carrier.
+9.83 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.84 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.85 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.86 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.87 Warranty claims do not extend the warranty period.
+9.88 Discounts above ten percent require a supervisor code.
+9.89 Store credit expires after twelve months and cannot be extended by an agent.
+9.90 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.91 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.92 A ticket that waits for the customer is closed after seven days without a reply.
+9.93 The refund reason must be recorded as one of the four allowed codes.
+9.94 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.95 A serial number that does not match the order is escalated before any repair is approved.
+9.96 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.97 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.98 An order is considered late when it is more than three working days past the promised date.
+9.99 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.100 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.101 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.102 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.103 A repair ticket needs a photograph of the defect before it can be queued.
+9.104 Every escalation must state what was already tried and what the customer wants.
+9.105 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.106 Missing parcels are traced with the carrier before a replacement is sent.
+9.107 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.108 The agent never promises a date that the warehouse has not confirmed.
+9.109 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.110 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.111 The customer pays shipping to the workshop and the company pays the return shipping.
+9.112 Apologies are short and followed by the next concrete step.
+9.113 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.114 Address changes are possible until the parcel is handed to the carrier.
+9.115 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.116 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.117 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.118 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.119 Warranty claims do not extend the warranty period.
+9.120 Discounts above ten percent require a supervisor code.
+9.121 Store credit expires after twelve months and cannot be extended by an agent.
+9.122 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.123 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.124 A ticket that waits for the customer is closed after seven days without a reply.
+9.125 The refund reason must be recorded as one of the four allowed codes.
+9.126 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.127 A serial number that does not match the order is escalated before any repair is approved.
+9.128 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.129 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.130 An order is considered late when it is more than three working days past the promised date.
+9.131 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.132 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.133 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.134 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.135 A repair ticket needs a photograph of the defect before it can be queued.
+9.136 Every escalation must state what was already tried and what the customer wants.
+9.137 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.138 Missing parcels are traced with the carrier before a replacement is sent.
+9.139 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.140 The agent never promises a date that the warehouse has not confirmed.
+9.141 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.142 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.143 The customer pays shipping to the workshop and the company pays the return shipping.
+9.144 Apologies are short and followed by the next concrete step.
+9.145 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.146 Address changes are possible until the parcel is handed to the carrier.
+9.147 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.148 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.149 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.150 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.151 Warranty claims do not extend the warranty period.
+9.152 Discounts above ten percent require a supervisor code.
+9.153 Store credit expires after twelve months and cannot be extended by an agent.
+9.154 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.155 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.156 A ticket that waits for the customer is closed after seven days without a reply.
+9.157 The refund reason must be recorded as one of the four allowed codes.
+9.158 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.159 A serial number that does not match the order is escalated before any repair is approved.
+9.160 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.161 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.162 An order is considered late when it is more than three working days past the promised date.
+9.163 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.164 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.165 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.166 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.167 A repair ticket needs a photograph of the defect before it can be queued.
+9.168 Every escalation must state what was already tried and what the customer wants.
+9.169 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.170 Missing parcels are traced with the carrier before a replacement is sent.
+9.171 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.172 The agent never promises a date that the warehouse has not confirmed.
+9.173 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.174 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.175 The customer pays shipping to the workshop and the company pays the return shipping.
+9.176 Apologies are short and followed by the next concrete step.
+9.177 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.178 Address changes are possible until the parcel is handed to the carrier.
+9.179 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.180 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.181 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.182 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.183 Warranty claims do not extend the warranty period.
+9.184 Discounts above ten percent require a supervisor code.
+9.185 Store credit expires after twelve months and cannot be extended by an agent.
+9.186 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.187 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.188 A ticket that waits for the customer is closed after seven days without a reply.
+9.189 The refund reason must be recorded as one of the four allowed codes.
+9.190 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.191 A serial number that does not match the order is escalated before any repair is approved.
+9.192 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.193 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.194 An order is considered late when it is more than three working days past the promised date.
+9.195 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.196 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.197 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.198 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.199 A repair ticket needs a photograph of the defect before it can be queued.
+9.200 Every escalation must state what was already tried and what the customer wants.
+9.201 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.202 Missing parcels are traced with the carrier before a replacement is sent.
+9.203 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.204 The agent never promises a date that the warehouse has not confirmed.
+9.205 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.206 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.207 The customer pays shipping to the workshop and the company pays the return shipping.
+9.208 Apologies are short and followed by the next concrete step.
+9.209 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.210 Address changes are possible until the parcel is handed to the carrier.
+9.211 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.212 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.213 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.214 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.215 Warranty claims do not extend the warranty period.
+9.216 Discounts above ten percent require a supervisor code.
+9.217 Store credit expires after twelve months and cannot be extended by an agent.
+9.218 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.219 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.220 A ticket that waits for the customer is closed after seven days without a reply.
+9.221 The refund reason must be recorded as one of the four allowed codes.
+9.222 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.223 A serial number that does not match the order is escalated before any repair is approved.
+9.224 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.225 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.226 An order is considered late when it is more than three working days past the promised date.
+9.227 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.228 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.229 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.230 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.231 A repair ticket needs a photograph of the defect before it can be queued.
+9.232 Every escalation must state what was already tried and what the customer wants.
+9.233 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.234 Missing parcels are traced with the carrier before a replacement is sent.
+9.235 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.236 The agent never promises a date that the warehouse has not confirmed.
+9.237 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.238 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.239 The customer pays shipping to the workshop and the company pays the return shipping.
+9.240 Apologies are short and followed by the next concrete step.
+9.241 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.242 Address changes are possible until the parcel is handed to the carrier.
+9.243 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.244 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.245 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.246 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.247 Warranty claims do not extend the warranty period.
+9.248 Discounts above ten percent require a supervisor code.
+9.249 Store credit expires after twelve months and cannot be extended by an agent.
+9.250 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.251 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.252 A ticket that waits for the customer is closed after seven days without a reply.
+9.253 The refund reason must be recorded as one of the four allowed codes.
+9.254 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.255 A serial number that does not match the order is escalated before any repair is approved.
+9.256 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.257 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.258 An order is considered late when it is more than three working days past the promised date.
+9.259 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.260 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.261 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.262 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.263 A repair ticket needs a photograph of the defect before it can be queued.
+9.264 Every escalation must state what was already tried and what the customer wants.
+9.265 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.266 Missing parcels are traced with the carrier before a replacement is sent.
+9.267 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.268 The agent never promises a date that the warehouse has not confirmed.
+9.269 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.270 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.271 The customer pays shipping to the workshop and the company pays the return shipping.
+9.272 Apologies are short and followed by the next concrete step.
+9.273 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.274 Address changes are possible until the parcel is handed to the carrier.
+9.275 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.276 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.277 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.278 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.279 Warranty claims do not extend the warranty period.
+9.280 Discounts above ten percent require a supervisor code.
+9.281 Store credit expires after twelve months and cannot be extended by an agent.
+9.282 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.283 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.284 A ticket that waits for the customer is closed after seven days without a reply.
+9.285 The refund reason must be recorded as one of the four allowed codes.
+9.286 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.287 A serial number that does not match the order is escalated before any repair is approved.
+9.288 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.289 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.290 An order is considered late when it is more than three working days past the promised date.
+9.291 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.292 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.293 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.294 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.295 A repair ticket needs a photograph of the defect before it can be queued.
+9.296 Every escalation must state what was already tried and what the customer wants.
+9.297 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.298 Missing parcels are traced with the carrier before a replacement is sent.
+9.299 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.300 The agent never promises a date that the warehouse has not confirmed.
+9.301 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.302 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.303 The customer pays shipping to the workshop and the company pays the return shipping.
+9.304 Apologies are short and followed by the next concrete step.
+9.305 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.306 Address changes are possible until the parcel is handed to the carrier.
+9.307 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.308 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.309 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.310 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.311 Warranty claims do not extend the warranty period.
+9.312 Discounts above ten percent require a supervisor code.
+9.313 Store credit expires after twelve months and cannot be extended by an agent.
+9.314 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.315 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.316 A ticket that waits for the customer is closed after seven days without a reply.
+9.317 The refund reason must be recorded as one of the four allowed codes.
+9.318 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.319 A serial number that does not match the order is escalated before any repair is approved.
+9.320 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.321 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.322 An order is considered late when it is more than three working days past the promised date.
+9.323 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.324 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.325 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.326 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.327 A repair ticket needs a photograph of the defect before it can be queued.
+9.328 Every escalation must state what was already tried and what the customer wants.
+9.329 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.330 Missing parcels are traced with the carrier before a replacement is sent.
+9.331 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.332 The agent never promises a date that the warehouse has not confirmed.
+9.333 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.334 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.335 The customer pays shipping to the workshop and the company pays the return shipping.
+9.336 Apologies are short and followed by the next concrete step.
+9.337 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.338 Address changes are possible until the parcel is handed to the carrier.
+9.339 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.340 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.341 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.342 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.343 Warranty claims do not extend the warranty period.
+9.344 Discounts above ten percent require a supervisor code.
+9.345 Store credit expires after twelve months and cannot be extended by an agent.
+9.346 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.347 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.348 A ticket that waits for the customer is closed after seven days without a reply.
+9.349 The refund reason must be recorded as one of the four allowed codes.
+9.350 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.351 A serial number that does not match the order is escalated before any repair is approved.
+9.352 Every closed ticket records the resolution code and the amount refunded, including zero.
+9.353 A refund request is valid when the order number and the delivery date are both present in the ticket.
+9.354 An order is considered late when it is more than three working days past the promised date.
+9.355 The warranty covers manufacturing defects and does not cover damage from liquid or from a drop.
+9.356 An escalation is opened when the customer asks for a supervisor twice in the same ticket.
+9.357 Damaged goods must be reported within fourteen days of delivery, and the original packaging stays with the customer until the claim closes.
+9.358 The promised date is the one shown at checkout, not the estimate in the confirmation email.
+9.359 A repair ticket needs a photograph of the defect before it can be queued.
+9.360 Every escalation must state what was already tried and what the customer wants.
+9.361 A refund is issued to the original payment method unless the customer asks for store credit in writing.
+9.362 Missing parcels are traced with the carrier before a replacement is sent.
+9.363 Repairs take between ten and twenty working days from the day the parcel arrives at the workshop.
+9.364 The agent never promises a date that the warehouse has not confirmed.
+9.365 Partial refunds require the amount to be stated as a number, not as a percentage range.
+9.366 A replacement for a missing parcel is sent only after the carrier closes the trace.
+9.367 The customer pays shipping to the workshop and the company pays the return shipping.
+9.368 Apologies are short and followed by the next concrete step.
+9.369 Refunds above two hundred are reviewed by a supervisor before they are released.
+9.370 Address changes are possible until the parcel is handed to the carrier.
+9.371 A device that cannot be repaired is replaced with the same model or with the next model up.
+9.372 A customer who is angry about a delay is offered a tracking update first, not a discount.
+9.373 A refund that is already in processing cannot be cancelled, only reversed after it settles.
+9.374 Delivery to a pickup point counts as delivered on the day it arrives there.
+9.375 Warranty claims do not extend the warranty period.
+9.376 Discounts above ten percent require a supervisor code.
+9.377 Store credit expires after twelve months and cannot be extended by an agent.
+9.378 Customs delays are outside the delivery promise and are explained to the customer as such.
+9.379 Proof of purchase can be a receipt, an invoice, or the order number in this system.
+9.380 A ticket that waits for the customer is closed after seven days without a reply.
+9.381 The refund reason must be recorded as one of the four allowed codes.
+9.382 Shipping fees are refunded only when the delay was caused by the warehouse.
+9.383 A serial number that does not match the order is escalated before any repair is approved.

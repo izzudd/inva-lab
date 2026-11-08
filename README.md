@@ -21,9 +21,11 @@ because each lab assumes you finished the ones before it.
 | [`0001.n-plus-one/`](0001.n-plus-one/) | N+1 queries, a missing index | feed endpoint: 41 queries, 1.1 seconds |
 | [`0002.idempotency/`](0002.idempotency/) | Idempotency, unique keys, lost updates | webhook: 1 event delivered 4× becomes 4 ledger rows |
 | [`0003.reconciliation/`](0003.reconciliation/) | One fact from two paths, a job that may rerun | webhook + reconciliation job: 6 payments become 12 ledger rows |
+| [`0006.prompt-caching/`](0006.prompt-caching/) | Prompt cache hits, prefix bytes, cache TTL | support agent: 0% cache hits, and caching costs 21% more than not caching |
 
-Labs `0004` and `0005` are the **beginner entry point**: `python3` is all you need — no Docker, no
-database, no `pip install`. The other three are production level (FastAPI + Postgres + Docker).
+Labs `0004`, `0005` and `0006` are the **beginner entry point**: `python3` is all you need — no
+Docker, no database, no `pip install`. Labs `0001`–`0003` are production level (FastAPI + Postgres +
+Docker).
 
 ## How to use it
 
@@ -35,7 +37,7 @@ make bench   # look at the numbers before changing anything
 make check   # the target you have to hit
 ```
 
-Labs `0004` and `0005` need none of that — just:
+Labs `0004`, `0005` and `0006` need none of that — just:
 
 ```bash
 cd inva-lab/0004.mutation-and-scope
@@ -48,9 +50,10 @@ everything runs inside containers. Ports in use: `58000`/`55432` (lab `0001.n-pl
 `58100`/`55433` (lab `0002.idempotency`), `58102`/`58103`/`55434` (lab `0003.reconciliation`).
 Labs `0004` and `0005` use no ports at all.
 
-Suggested order: `0004.mutation-and-scope`, then `0005.error-messages` (both need only `python3`),
-then `0001.n-plus-one`, `0002.idempotency`, and `0003.reconciliation` — the last one assumes you
-finished the idempotency lab, because its starting code is the result of that lab.
+Suggested order: `0004.mutation-and-scope`, then `0005.error-messages`, then
+`0006.prompt-caching` (all three need only `python3`), then `0001.n-plus-one`, `0002.idempotency`,
+and `0003.reconciliation` — the last one assumes you finished the idempotency lab, because its
+starting code is the result of that lab.
 
 Directory names may change; the Docker project name is pinned in each `docker-compose.yml` (`name:`),
 so your containers and volumes survive a rename.
@@ -77,8 +80,10 @@ Every lab also ships a `HINTS.md` with three levels. Use that first.
 ## Language
 
 English is the primary language of this repo. Indonesian originals are kept beside each English file
-as `README.id.md` / `HINTS.id.md`. The lab *code* (identifiers, comments, and the strings `make check`
-prints) is still Indonesian — `LULUS` means PASS, `GAGAL` means FAIL.
+as `README.id.md` / `HINTS.id.md`. The lab *code* of `0001`–`0005` (identifiers, comments, and the
+strings `make check` prints) is still Indonesian — `LULUS` means PASS, `GAGAL` means FAIL — because
+those labs were written before the switch. `0006` and later are English throughout: `GREEN` means
+PASS.
 
 ## License
 

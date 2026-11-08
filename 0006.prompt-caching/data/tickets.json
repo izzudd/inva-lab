@@ -1,0 +1,44 @@
+[
+  {
+    "id": "T-1041",
+    "subject": "Parcel never arrived",
+    "turns": [
+      "Hi, my order 88231 was supposed to arrive last Thursday and it never showed up.",
+      "The tracking page still says in transit since the 3rd. Order 88231.",
+      "It is a pair of running shoes, size 43, ordered on the 28th.",
+      "I already asked the neighbour and the front desk. Nothing there.",
+      "Sorry for the slow reply, I was travelling. Any news from the carrier?",
+      "If it is lost, can I get the shoes reshipped instead of a refund?",
+      "Same model, same size, and please send it to my office address this time.",
+      "That works. Can you confirm the new delivery date in writing?"
+    ]
+  },
+  {
+    "id": "T-1042",
+    "subject": "Refund amount is wrong",
+    "turns": [
+      "I returned the jacket and the refund that arrived is 40 less than what I paid.",
+      "Order 88305, returned on the 2nd, refund landed yesterday.",
+      "I paid for express shipping, is that the part you did not refund?",
+      "The jacket itself was 129 and the shipping was 40, so the total was 169.",
+      "I have the receipt if you need it. I can send a photo.",
+      "Fine, please check with the warehouse and tell me what they say.",
+      "I would rather have the difference back on the card than store credit.",
+      "Understood. How long does the second refund usually take?"
+    ]
+  },
+  {
+    "id": "T-1043",
+    "subject": "Repair status",
+    "turns": [
+      "I sent my headphones for repair two weeks ago and I have heard nothing.",
+      "The repair ticket number is R-5561, started on the 21st.",
+      "The defect was the left cup cutting out when the cable moves.",
+      "I did include a photo of the cable in the original email.",
+      "Sorry, I missed your call yesterday. What did the workshop say?",
+      "Twenty working days from arrival means it should be done this week, right?",
+      "If they cannot repair it, what is the replacement model?",
+      "Okay, I will wait for the confirmation email. Thanks."
+    ]
+  }
+]
