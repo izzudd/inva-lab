@@ -1,9 +1,9 @@
 """store.py — the stock table, and the one function that applies a message.
 
-This is the file you are meant to change. It runs on a dict, so a whole replay
-takes milliseconds and prints the same numbers on every machine.
+This is the answer version. It runs on a dict, so a whole replay takes
+milliseconds and prints the same numbers on every machine.
 
-Two rules the store has to keep, and neither is enforced yet:
+Two rules the store keeps:
 
 1. A message describes the quantity at `event_time`. A message that carries an
    older `event_time` than the row already holds is news about the past.
@@ -42,6 +42,7 @@ class Stock:
 
     def __init__(self, skus: list[str]) -> None:
         self.rows = {sku: {"quantity": 0, "event_time": "1970-01-01T00:00:00Z"} for sku in skus}
+        self.seen: set[str] = set()
         self.applied = 0
         self.rejected = 0
         self.stale_applied = 0
@@ -51,14 +52,30 @@ class Stock:
         """Apply one message. Returns True when it changed the row."""
         row = self.rows[message["sku"]]
 
-        if message["type"] == "set":
-            row["quantity"] = message["quantity"]
-        else:
-            if row["quantity"] <= 0:
+        # The same event, delivered again, is the same news. Do not count it twice.
+        if message["event_id"] in self.seen:
+            self.rejected += 1
+            return False
+
+        # A message older than the row describes a state that is already gone.
+        if clock(message["event_time"]) <= clock(row["event_time"]):
+            self.rejected += 1
+            self.stale_applied += 1
+            self.seen.add(message["event_id"])
+            return False
+
+        if message["type"] == "sale":
+            if row["quantity"] < message["quantity"]:
+                self.rejected += 1
                 self.sold_from_empty += 1
+                self.seen.add(message["event_id"])
+                return False
             row["quantity"] -= message["quantity"]
+        else:
+            row["quantity"] = message["quantity"]
 
         row["event_time"] = message["event_time"]
+        self.seen.add(message["event_id"])
         self.applied += 1
         return True
 
