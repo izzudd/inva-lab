@@ -22,8 +22,9 @@ because each lab assumes you finished the ones before it.
 | [`0002.idempotency/`](0002.idempotency/) | Idempotency, unique keys, lost updates | webhook: 1 event delivered 4× becomes 4 ledger rows |
 | [`0003.reconciliation/`](0003.reconciliation/) | One fact from two paths, a job that may rerun | webhook + reconciliation job: 6 payments become 12 ledger rows |
 | [`0006.prompt-caching/`](0006.prompt-caching/) | Prompt cache hits, prefix bytes, cache TTL | support agent: 0% cache hits, and caching costs 21% more than not caching |
+| [`0008.stale-writes/`](0008.stale-writes/) | Out-of-order updates, event time vs arrival time, lost updates | stock service: mug reads 4 while the shelf holds 6, and a cap sells at 0 |
 
-Labs `0004`, `0005` and `0006` are the **beginner entry point**: `python3` is all you need — no
+Labs `0004`, `0005`, `0006` and `0008` are the **beginner entry point**: `python3` is all you need — no
 Docker, no database, no `pip install`. Labs `0001`–`0003` are production level (FastAPI + Postgres +
 Docker).
 
@@ -37,7 +38,7 @@ make bench   # look at the numbers before changing anything
 make check   # the target you have to hit
 ```
 
-Labs `0004`, `0005` and `0006` need none of that — just:
+Labs `0004`, `0005`, `0006` and `0008` need none of that — just:
 
 ```bash
 cd inva-lab/0004.mutation-and-scope
@@ -51,7 +52,7 @@ everything runs inside containers. Ports in use: `58000`/`55432` (lab `0001.n-pl
 Labs `0004` and `0005` use no ports at all.
 
 Suggested order: `0004.mutation-and-scope`, then `0005.error-messages`, then
-`0006.prompt-caching` (all three need only `python3`), then `0001.n-plus-one`, `0002.idempotency`,
+`0006.prompt-caching`, then `0008.stale-writes` (all four need only `python3`), then `0001.n-plus-one`, `0002.idempotency`,
 and `0003.reconciliation` — the last one assumes you finished the idempotency lab, because its
 starting code is the result of that lab.
 
