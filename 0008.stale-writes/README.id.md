@@ -81,10 +81,10 @@ yang ia lakukan, bukan apa yang seharusnya ia lakukan.
 
 ## Di mana jawabannya
 
-Jawaban yang berjalan ada di branch **`solusi/0008-stale-writes`**:
+Jawaban yang berjalan ada di branch **`solusi-0008-stale-writes`**:
 
 ```bash
-git diff main solusi/0008-stale-writes -- 0008.stale-writes/
+git diff main solusi-0008-stale-writes -- 0008.stale-writes/
 ```
 
 Baca [`HINTS.id.md`](HINTS.id.md) dulu. Ada tiga tingkat, dan tingkat pertama cuma meminta kamu

@@ -82,10 +82,10 @@ what it should have done.
 
 ## Where the answers are
 
-The working answer lives on the **`solusi/0008-stale-writes`** branch:
+The working answer lives on the **`solusi-0008-stale-writes`** branch:
 
 ```bash
-git diff main solusi/0008-stale-writes -- 0008.stale-writes/
+git diff main solusi-0008-stale-writes -- 0008.stale-writes/
 ```
 
 Read [`HINTS.md`](HINTS.md) first. It has three levels, and the first one only asks you to put two
