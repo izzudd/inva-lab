@@ -1,0 +1,16 @@
+{
+  "note": "Arrival order is the array order. Three of these did not arrive in the order they happened.",
+  "messages": [
+    {"event_id": "e-101", "sku": "MUG-01", "type": "set",  "quantity": 12, "event_time": "2026-11-09T10:00:00Z"},
+    {"event_id": "e-104", "sku": "MUG-01", "type": "set",  "quantity": 6,  "event_time": "2026-11-09T10:10:00Z"},
+    {"event_id": "e-102", "sku": "MUG-01", "type": "set",  "quantity": 4,  "event_time": "2026-11-09T10:05:00Z"},
+    {"event_id": "e-201", "sku": "TEE-02", "type": "set",  "quantity": 9,  "event_time": "2026-11-09T10:02:00Z"},
+    {"event_id": "e-203", "sku": "TEE-02", "type": "set",  "quantity": 9,  "event_time": "2026-11-09T10:09:00Z"},
+    {"event_id": "e-202", "sku": "TEE-02", "type": "set",  "quantity": 11, "event_time": "2026-11-09T10:08:00Z"},
+    {"event_id": "e-301", "sku": "CAP-03", "type": "set",  "quantity": 3,  "event_time": "2026-11-09T10:03:00Z"},
+    {"event_id": "e-302", "sku": "CAP-03", "type": "sale", "quantity": 2,  "event_time": "2026-11-09T10:07:00Z"},
+    {"event_id": "e-303", "sku": "CAP-03", "type": "sale", "quantity": 1,  "event_time": "2026-11-09T10:11:00Z"},
+    {"event_id": "e-304", "sku": "CAP-03", "type": "set",  "quantity": 0,  "event_time": "2026-11-09T10:12:00Z"},
+    {"event_id": "e-305", "sku": "CAP-03", "type": "sale", "quantity": 1,  "event_time": "2026-11-09T10:14:00Z"}
+  ]
+}

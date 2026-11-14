@@ -19,8 +19,9 @@ paling awal, karena tiap lab menganggap kamu sudah melewati lab sebelumnya.
 | [`0001.n-plus-one/`](0001.n-plus-one/) | N+1 query, index yang hilang | endpoint feed: 41 query, 1,1 detik |
 | [`0002.idempotency/`](0002.idempotency/) | Idempotensi, unique key, lost update | webhook: 1 event dikirim 4× jadi 4 baris ledger |
 | [`0003.reconciliation/`](0003.reconciliation/) | Satu fakta dari dua jalur, job yang boleh diulang | webhook + job rekonsiliasi: 6 pembayaran jadi 12 baris ledger |
+| [`0008.stale-writes/`](0008.stale-writes/) | Update tidak berurutan, waktu kejadian vs waktu tiba, lost update | layanan stok: mug terbaca 4 padahal di rak ada 6, dan topi terjual saat stok nol |
 
-Lab `0004` dan `0005` adalah **titik masuk level pemula**: cukup `python3` yang sudah ada di
+Lab `0004`, `0005` dan `0008` adalah **titik masuk level pemula**: cukup `python3` yang sudah ada di
 mesinmu — tanpa Docker, tanpa database, tanpa `pip install`. Tiga lab sisanya level produksi
 (FastAPI + Postgres + Docker).
 
@@ -34,7 +35,7 @@ make bench   # lihat angkanya dulu sebelum mengubah apa pun
 make check   # target yang harus kamu capai
 ```
 
-Lab `0004` dan `0005` nggak butuh langkah di atas — cukup:
+Lab `0004`, `0005` dan `0008` nggak butuh langkah di atas — cukup:
 
 ```bash
 cd inva-lab/0004.mutation-and-scope
@@ -47,8 +48,8 @@ semuanya jalan di dalam container. Port yang dipakai: `58000`/`55432` (lab `0001
 `58100`/`55433` (lab `0002.idempotency`), `58102`/`58103`/`55434` (lab `0003.reconciliation`).
 Lab `0004` dan `0005` nggak memakai port sama sekali.
 
-Urutan yang disarankan: `0004.mutation-and-scope`, lalu `0005.error-messages` (dua-duanya cuma
-butuh `python3`), baru `0001.n-plus-one`, `0002.idempotency`, dan `0003.reconciliation` — lab
+Urutan yang disarankan: `0004.mutation-and-scope`, lalu `0005.error-messages`, lalu
+`0008.stale-writes` (ketiganya cuma butuh `python3`), baru `0001.n-plus-one`, `0002.idempotency`, dan `0003.reconciliation` — lab
 terakhir menganggap kamu sudah menyelesaikan lab idempotensi, karena kode awalnya memang hasil
 dari lab itu.
 
